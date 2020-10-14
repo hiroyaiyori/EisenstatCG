@@ -31,7 +31,7 @@ int print_vector(vector x)
 //            cout << endl;
 //    }
 //}
-double dotproduct(vector x, vector y)
+double dotproduct(const vector x, const vector y)
 {
     int i;
     double sum;
@@ -53,7 +53,7 @@ void multiply_mv(vector Ab, matrix A, vector b)
     }
 }
 
-void multiply_sv(vector ab, double a, vector b)
+void multiply_sv(vector ab, double a, const vector b)
 {
    int i;
    for (i = 0; i < N; i++){
@@ -61,7 +61,7 @@ void multiply_sv(vector ab, double a, vector b)
    }
 }
 
-void copy_vector(int n, vector y, vector x)
+void copy_vector(int n, vector y, const vector x)
 {
     int i;
     for (i = 0; i < n; i++)
@@ -81,7 +81,7 @@ void cg(int maxt, matrix A, vector b, vector x, double eps, int *maxiter) {
 /* r := b - A x */
     for (i = 0; i < N; i++)
         r[i] = b[i] - r[i];
-
+    print_vector(r);
 /* β := 1 / (r,r); p := β r */
     beta = 1.0 / dotproduct(r, r);
     multiply_sv(p, beta, r);
@@ -89,10 +89,12 @@ void cg(int maxt, matrix A, vector b, vector x, double eps, int *maxiter) {
     for (k = 0; k < maxt; k++) {
 /* Ap := A * p */
         multiply_mv(Ap, A, p);
+        print_vector(Ap);
 /* pAp := (p, Ap) */
         pAp = dotproduct(p, Ap);
 /* α = 1/(p,Ap) */
         alpha = 1.0 / pAp;
+        printf("alpha = %g\n", alpha * beta);
 /* x, r の更新 */
         for (i = 0; i < N; i++) {
 /* x = x + α*p */
@@ -100,8 +102,10 @@ void cg(int maxt, matrix A, vector b, vector x, double eps, int *maxiter) {
 /* r = r - α*A*p */
             r[i] -= alpha * Ap[i];
         }
+        print_vector(r);
 /* ||r||<ε||b|| ならば反復を終了 */
         rxr = dotproduct(r,r);
+        printf("LOOP : %d\t Error = %g\n", k, rxr);
         if (rxr < eps_b2)
             break;
 /* β := 1 / (r, r) */
@@ -132,6 +136,9 @@ int main(void)
     vector b = {3.0, 1.0, 4.0, 0.0, 5.0, -1.0, 6.0, -2.0, 7.0, -15.0};
     // 初期値を設定
     vector x = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+//    matrix a = {{5.0/18.0, 0.0}, {0.0, 0.5}};
+//    vector b = {1.0/6.0, 0.5};
+//    vector x = {3.0,3.0};
     int    i;
     int maxiter;
 

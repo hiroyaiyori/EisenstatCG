@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <math.h>
 
-#define N    2
-#define TMAX 4
+#define N    10
+#define TMAX 100
 #define EPS  (1.0e-6)
-#define OMEGA  1.0
+#define OMEGA  1.5
 
 typedef double vector[N];       // ベクトル
 typedef double matrix[N][N];    // 行列
@@ -20,14 +20,14 @@ int print_vector(vector x)
     return 0;
 }
 
-void copy_vector(vector y, vector x)
+void copy_vector(vector y, const vector x)
 {
     int i;
     for (i = 0; i < N; i++)
         y[i] = x[i];
 }
 
-double dotproduct(vector x, vector y)
+double dotproduct(const vector x, const vector y)
 {
     int i;
     double sum;
@@ -49,7 +49,7 @@ void multiply_mv(vector Ab, matrix A, vector b)
     }
 }
 
-void multiply_sv(vector ab, double a, vector b)
+void multiply_sv(vector ab, double a, const vector b)
 {
    int i;
    for (i = 0; i < N; i++){
@@ -61,7 +61,7 @@ void forward_substitution(matrix L, vector x){
     int i, j;
     for(i = 0; i < N; i++){
         for(j = 0; j < i; j++){
-            x[i] -= L[i][j] * x[j];
+            x[i] -= L[j][i] * x[j];
         }
         x[i] = x[i] / L[i][i];
     }
@@ -78,14 +78,14 @@ void backward_substitution(matrix U, vector x){
 }
 
 void eisenstat_cg(const int maxt, matrix A, vector b, vector x, const double eps, const double omega, int *itern) {
-    int i, k;
+    int i, j, k;
     double eps_b, eps_b2, pAp, alpha, beta, rxr, pre_rxr;
     static vector r;
     static vector p;
     static vector q;
     static vector Ap;
     static vector D;
-    static vector p_tilde;
+    static vector s;
     double omega_i = 1 - 2 / omega;
 /* eps_b2 := (ε ||b||)^2 */
     eps_b = eps * norm(b);
@@ -99,15 +99,16 @@ void eisenstat_cg(const int maxt, matrix A, vector b, vector x, const double eps
         r[i] = b[i] - r[i];
         D[i] = A[i][i];
         A[i][i] /= omega;
+        for (j = 0; j < i; j++)
+            A[i][j] = 0;
     }
-
-    print_vector(r);
 
 
 /* r_tilde := (L^T + D/ω)^-1 * r */
     backward_substitution(A, r);
 /* rxr := (r, r) */
     rxr = dotproduct(r,r);
+    print_vector(r);
 
 /* p = r */
     copy_vector(p, r);
@@ -116,18 +117,18 @@ void eisenstat_cg(const int maxt, matrix A, vector b, vector x, const double eps
         pre_rxr = rxr;
 /* EISENSTAT TRICK  */
 
-/* p_tilde := (L + D/ω)^-1 * p  */
-        copy_vector(p_tilde, p);
-        forward_substitution(A, p_tilde);
+/* s := (L + D/ω)^-1 * p  */
+        copy_vector(s, p);
+        forward_substitution(A, s);
 /* q := p + (1 - 2/ω)D(L + D/ω)^-1 * p  */
         for (i = 0; i < N; i++){
-            q[i] = p[i] + omega_i * D[i] * p_tilde[i];
+            q[i] = p[i] + omega_i * D[i] * s[i];
         }
 /* q := (L^T + D/ω)^-1 * q  */
         backward_substitution(A, q);
-/* Ap := p_tilde + q  */
+/* Ap := s + q  */
         for (i = 0; i < N; i++){
-            Ap[i] = p_tilde[i] + q[i];
+            Ap[i] = s[i] + q[i];
         }
         print_vector(Ap);
 
@@ -137,13 +138,15 @@ void eisenstat_cg(const int maxt, matrix A, vector b, vector x, const double eps
         pAp = dotproduct(p, Ap);
 /* α = (r,r)/(p,Ap) */
         alpha = pre_rxr / pAp;
+        printf("alpha = %g\n", alpha);
 /* x, r の更新 */
         for (i = 0; i < N; i++) {
 /* x = x + α*p */
-            x[i] += alpha * p_tilde[i];
+            x[i] += alpha * s[i];
 /* r = r - α*A*p */
             r[i] -= alpha * Ap[i];
         }
+        print_vector(r);
 /* calc new rxr */
         rxr = dotproduct(r,r);
 
@@ -152,12 +155,11 @@ void eisenstat_cg(const int maxt, matrix A, vector b, vector x, const double eps
         printf("LOOP : %d\t Error = %g\n", k, rxr);
         if (rxr < eps_b2)
             break;
-
         /* β := rxr / pre_rxr */
         beta = rxr / pre_rxr;
         /* p := r + β*p */
         for (i = 0; i < N; i++){
-            p[i] += beta * r[i];
+            p[i] = beta * p[i] + r[i];
         }
     }
     *itern = k;
@@ -165,32 +167,20 @@ void eisenstat_cg(const int maxt, matrix A, vector b, vector x, const double eps
 int main(void) {
     // 連立方程式 Ax = b
     // 行列Aは正定値対象行列
-//    matrix a = { {5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-//                 {2.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0},
-//                 {0.0, 2.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-//                 {0.0, 0.0, 2.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-//                 {0.0, 0.0, 0.0, 2.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0},
-//                 {0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 2.0, 0.0, 0.0, 0.0},
-//                 {0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0, -2.0, 0.0, 0.0},
-//                 {0.0, 2.0, 0.0, 0.0, 0.0, 0.0, -2.0, 5.0, 2.0, 0.0},
-//                 {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 2.0},
-//                 {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0} };
-////    matrix a = { {5.0, 1.0, 0.0, 0.0, 0.0, 3.0, 0.0, 0.0, 0.0, 0.0},
-////                 {1.0, 5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-////                 {0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-////                 {0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-////                 {0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-////                 {3.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0},
-////                 {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0},
-////                 {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0},
-////                 {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0},
-////                 {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.0} };
-//    vector b = {3.0, 1.0, 4.0, 0.0, 5.0, -1.0, 6.0, -2.0, 7.0, -15.0};
-//    // 初期値を設定
-//    vector x = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
-    matrix a = {{3.0,1.0},{1.0,2.0}};
-    vector b = {1.0,1.0};
-    vector x = {1.0,1.0};
+    matrix a = { {5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+                 {2.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0},
+                 {0.0, 2.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+                 {0.0, 0.0, 2.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+                 {0.0, 0.0, 0.0, 2.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0},
+                 {0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 2.0, 0.0, 0.0, 0.0},
+                 {0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0, -2.0, 0.0, 0.0},
+                 {0.0, 2.0, 0.0, 0.0, 0.0, 0.0, -2.0, 5.0, 2.0, 0.0},
+                 {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 2.0},
+                 {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0} };
+    vector b = {3.0, 1.0, 4.0, 0.0, 5.0, -1.0, 6.0, -2.0, 7.0, -15.0};
+    // 初期値を設定
+    vector x = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+
     int    i;
     int itern;
 
@@ -206,7 +196,5 @@ int main(void) {
         printf("x[%d] = %2g\n", i, x[i]);
     }
     printf("error %2g\n", err_sum);
-
-
     return 0;
 }

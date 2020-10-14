@@ -4,5 +4,8 @@ project(cg_method)
 set(CMAKE_CXX_STANDARD 14)            # Enable c++14 standard
 
 # Add main.cpp file of project root directory as source file
-set(SOURCE_FILES eisenstat.c)
-add_executable(simple_example ${SOURCE_FILES})
+set(TAKAHASHI_SOURCE takahashi.c)
+add_executable(takahashi ${TAKAHASHI_SOURCE})
+
+set(EISENSTAT_SOURCE eisenstat.c)
+add_executable(eisenstat ${EISENSTAT_SOURCE})
