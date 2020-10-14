@@ -9,3 +9,6 @@ add_executable(takahashi ${TAKAHASHI_SOURCE})
 
 set(EISENSTAT_SOURCE eisenstat.c)
 add_executable(eisenstat ${EISENSTAT_SOURCE})
+
+set(TRI_SOURCE tri.c)
+add_executable(tri ${TRI_SOURCE})
