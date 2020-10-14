@@ -77,19 +77,18 @@ void backward_substitution(matrix U, vector x){
     }
 }
 
-void eisenstat_cg(const int maxt, matrix A, vector b, vector x, const double eps, const double omega, int *itern) {
+void eisenstat_cg(const int maxt, matrix A, const vector b, vector x, const double eps, const double omega, int *itern) {
     int i, j, k;
-    double eps_b, eps_b2, pAp, alpha, beta, rxr, pre_rxr;
+    double eps_rxr0, pAp, alpha, beta, rxr, pre_rxr;
     static vector r;
     static vector p;
     static vector q;
     static vector Ap;
     static vector D;
     static vector s;
+    static vector rt;
     double omega_i = 1 - 2 / omega;
-/* eps_b2 := (ε ||b||)^2 */
-    eps_b = eps * norm(b);
-    eps_b2 = eps_b * eps_b;
+
 /* r := A x */
     multiply_mv(r, A, x);
 
@@ -99,16 +98,16 @@ void eisenstat_cg(const int maxt, matrix A, vector b, vector x, const double eps
         r[i] = b[i] - r[i];
         D[i] = A[i][i];
         A[i][i] /= omega;
-        for (j = 0; j < i; j++)
-            A[i][j] = 0;
     }
+    /* eps_b2 := (ε ||b||)^2 */
+    eps_rxr0 = eps * dotproduct(r,r);
 
 
 /* r_tilde := (L^T + D/ω)^-1 * r */
     backward_substitution(A, r);
 /* rxr := (r, r) */
     rxr = dotproduct(r,r);
-    print_vector(r);
+
 
 /* p = r */
     copy_vector(p, r);
@@ -130,7 +129,6 @@ void eisenstat_cg(const int maxt, matrix A, vector b, vector x, const double eps
         for (i = 0; i < N; i++){
             Ap[i] = s[i] + q[i];
         }
-        print_vector(Ap);
 
 /* EISENSTAT TRICK DONE */
 
@@ -138,7 +136,6 @@ void eisenstat_cg(const int maxt, matrix A, vector b, vector x, const double eps
         pAp = dotproduct(p, Ap);
 /* α = (r,r)/(p,Ap) */
         alpha = pre_rxr / pAp;
-        printf("alpha = %g\n", alpha);
 /* x, r の更新 */
         for (i = 0; i < N; i++) {
 /* x = x + α*p */
@@ -146,14 +143,19 @@ void eisenstat_cg(const int maxt, matrix A, vector b, vector x, const double eps
 /* r = r - α*A*p */
             r[i] -= alpha * Ap[i];
         }
-        print_vector(r);
 /* calc new rxr */
         rxr = dotproduct(r,r);
 
-/* TODO: FIX ||r||<ε||b|| ならば反復を終了 */
-
+/* rt = (L^T + D/ω) * r */
+        for (i = 0; i < N; i++){
+            rt[i] = 0;
+            for (j = i; j < N; j++){
+                rt[i] += A[i][j] * r[j];
+            }
+        }
         printf("LOOP : %d\t Error = %g\n", k, rxr);
-        if (rxr < eps_b2)
+/* if (rt, rt)/(r0, r0) < eps then stop */
+        if (dotproduct(rt, rt) < eps_rxr0)
             break;
         /* β := rxr / pre_rxr */
         beta = rxr / pre_rxr;
