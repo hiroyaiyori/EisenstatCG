@@ -8,88 +8,241 @@
 		<Option virtualFolders="CMake Files\;"/>
 		<Build>
 			<Target title="all">
-				<Option working_dir="/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug"/>
+				<Option working_dir="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="rebuild_cache">
-				<Option working_dir="/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug"/>
+				<Option working_dir="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="tri">
+				<Option output="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/tri" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="."/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0/x86_64-apple-darwin19"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0/backward"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/include"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/include-fixed"/>
+					<Add directory="/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 tri"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="tri/fast">
+				<Option output="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/tri" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="."/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0/x86_64-apple-darwin19"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0/backward"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/include"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/include-fixed"/>
+					<Add directory="/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 tri/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="edit_cache">
-				<Option working_dir="/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug"/>
+				<Option working_dir="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
-			<Target title="simple_example">
-				<Option output="/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/simple_example" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug"/>
+			<Target title="crs_tri">
+				<Option output="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/crs_tri" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
 					<Add directory="."/>
 					<Add directory="/usr/local/include"/>
-					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin18/10.2.0/../../../../../../include/c++/10.2.0"/>
-					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin18/10.2.0/../../../../../../include/c++/10.2.0/x86_64-apple-darwin18"/>
-					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin18/10.2.0/../../../../../../include/c++/10.2.0/backward"/>
-					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin18/10.2.0/include"/>
-					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin18/10.2.0/include-fixed"/>
-					<Add directory="/Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk/usr/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk/System/Library/Frameworks"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0/x86_64-apple-darwin19"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0/backward"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/include"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/include-fixed"/>
+					<Add directory="/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/Makefile&quot;  VERBOSE=1 simple_example"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 crs_tri"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
-			<Target title="simple_example/fast">
-				<Option output="/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/simple_example" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug"/>
+			<Target title="crs_tri/fast">
+				<Option output="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/crs_tri" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
 					<Add directory="."/>
 					<Add directory="/usr/local/include"/>
-					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin18/10.2.0/../../../../../../include/c++/10.2.0"/>
-					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin18/10.2.0/../../../../../../include/c++/10.2.0/x86_64-apple-darwin18"/>
-					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin18/10.2.0/../../../../../../include/c++/10.2.0/backward"/>
-					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin18/10.2.0/include"/>
-					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin18/10.2.0/include-fixed"/>
-					<Add directory="/Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk/usr/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk/System/Library/Frameworks"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0/x86_64-apple-darwin19"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0/backward"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/include"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/include-fixed"/>
+					<Add directory="/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/Makefile&quot;  VERBOSE=1 simple_example/fast"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 crs_tri/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="eisenstat">
+				<Option output="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/eisenstat" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="."/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0/x86_64-apple-darwin19"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0/backward"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/include"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/include-fixed"/>
+					<Add directory="/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 eisenstat"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="eisenstat/fast">
+				<Option output="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/eisenstat" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="."/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0/x86_64-apple-darwin19"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0/backward"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/include"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/include-fixed"/>
+					<Add directory="/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 eisenstat/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="takahashi">
+				<Option output="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/takahashi" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="."/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0/x86_64-apple-darwin19"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0/backward"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/include"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/include-fixed"/>
+					<Add directory="/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 takahashi"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="takahashi/fast">
+				<Option output="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/takahashi" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="."/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0/x86_64-apple-darwin19"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/../../../../../../include/c++/10.2.0/backward"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/include"/>
+					<Add directory="/usr/local/Cellar/gcc/10.2.0/lib/gcc/10/gcc/x86_64-apple-darwin19/10.2.0/include-fixed"/>
+					<Add directory="/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 takahashi/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/Users/iyori/Desktop/UT/graduate/eisenstat/eisenstat.c">
-			<Option target="simple_example"/>
+		<Unit filename="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/crs_tri.c">
+			<Option target="crs_tri"/>
 		</Unit>
-		<Unit filename="/Users/iyori/Desktop/UT/graduate/eisenstat/CMakeLists.txt">
+		<Unit filename="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/eisenstat.c">
+			<Option target="eisenstat"/>
+		</Unit>
+		<Unit filename="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/takahashi.c">
+			<Option target="takahashi"/>
+		</Unit>
+		<Unit filename="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/tri.c">
+			<Option target="tri"/>
+		</Unit>
+		<Unit filename="/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
 	</Project>

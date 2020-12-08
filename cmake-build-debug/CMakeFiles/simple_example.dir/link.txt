@@ -1,1 +1,0 @@
-/usr/local/Cellar/gcc/10.2.0/bin/gcc-10 -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/simple_example.dir/eisenstat.c.o  -o simple_example 

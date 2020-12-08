@@ -1,3 +1,6 @@
-/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/iyori/Desktop/UT/graduate/eisenstat/cmake-build-debug/CMakeFiles/simple_example.dir
+/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/CMakeFiles/tri.dir
+/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/CMakeFiles/crs_tri.dir
+/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/CMakeFiles/eisenstat.dir
+/Users/hiroya/Desktop/UT/graduate/eisenstat/EisenstatCG/cmake-build-debug/CMakeFiles/takahashi.dir
