@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 
 #define N    10
 #define TMAX 100
@@ -81,7 +82,6 @@ void cg(int maxt, matrix A, vector b, vector x, double eps, int *maxiter) {
 /* r := b - A x */
     for (i = 0; i < N; i++)
         r[i] = b[i] - r[i];
-    print_vector(r);
 /* β := 1 / (r,r); p := β r */
     beta = 1.0 / dotproduct(r, r);
     multiply_sv(p, beta, r);
@@ -89,12 +89,10 @@ void cg(int maxt, matrix A, vector b, vector x, double eps, int *maxiter) {
     for (k = 0; k < maxt; k++) {
 /* Ap := A * p */
         multiply_mv(Ap, A, p);
-        print_vector(Ap);
 /* pAp := (p, Ap) */
         pAp = dotproduct(p, Ap);
 /* α = 1/(p,Ap) */
         alpha = 1.0 / pAp;
-        printf("alpha = %g\n", alpha * beta);
 /* x, r の更新 */
         for (i = 0; i < N; i++) {
 /* x = x + α*p */
@@ -102,7 +100,6 @@ void cg(int maxt, matrix A, vector b, vector x, double eps, int *maxiter) {
 /* r = r - α*A*p */
             r[i] -= alpha * Ap[i];
         }
-        print_vector(r);
 /* ||r||<ε||b|| ならば反復を終了 */
         rxr = dotproduct(r,r);
         printf("LOOP : %d\t Error = %g\n", k, rxr);
@@ -141,13 +138,18 @@ int main(void)
 //    vector x = {3.0,3.0};
     int    i;
     int maxiter;
-
+	long cpu_time_0, cpu_time_1, cg_cpu_time;
+	
+	cpu_time_0 = clock();
+	// printf("initial setting CPU time： %ld\n", cpu_time_0);
     // CG法でAx=bを解く
     cg(TMAX, a, b, x, EPS, &maxiter);
-
+	cpu_time_1 = clock();
+	cg_cpu_time = cpu_time_1 - cpu_time_0;
     vector ans_x = {0.637207, -0.093018, 1.42197, -1.4619, 2.23279, -1.62006, 1.31737, -1.32663, 3.72697, -4.49079};
-
+	
     printf("--------------- calc done -------------\n");
+	printf("CG Method CPU time： %ld\n", cg_cpu_time);
     double err_sum = 0.0;
     for(i = 0; i < N; i++){
         err_sum += (x[i] - ans_x[i]) * (x[i] - ans_x[i]);

@@ -1,16 +1,18 @@
 #include <stdio.h>
 #include <math.h>
-#include <time.h>
 
 #define N    10
-#define M    3
+#define NON_ZERO	30	
 #define TMAX 100
 #define EPS  (1.0e-6)
-#define EPS_D (2.0e-6)
 #define OMEGA  1.5
 
+// CRS方式
+typedef double A[NON_ZERO];       
+typedef double IA[N]; 
+typedef double JA[NON_ZERO];
+
 typedef double vector[N];       // ベクトル
-typedef double matrix[N][N];    // 行列
 
 
 
