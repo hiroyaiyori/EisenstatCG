@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.8)
 project(cg_method)
 set(CMAKE_CXX_STANDARD 14)            # Enable c++14 standard
 
-# Add main.cpp file of project root directory as source file
 set(TAKAHASHI_SOURCE takahashi.c)
 add_executable(takahashi ${TAKAHASHI_SOURCE})
 
@@ -12,3 +11,6 @@ add_executable(eisenstat ${EISENSTAT_SOURCE})
 
 set(TRI_SOURCE tri.c)
 add_executable(tri ${TRI_SOURCE})
+
+set(CRSTRI_SOURCE crs_tri.c)
+add_executable(crs_tri ${CRSTRI_SOURCE})

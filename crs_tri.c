@@ -1,18 +1,23 @@
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 
 #define N    10
+#define M    3
 #define NON_ZERO	30	
 #define TMAX 100
 #define EPS  (1.0e-6)
+#define EPS_D (2.0e-6)
 #define OMEGA  1.5
 
 // CRS方式
-typedef double A[NON_ZERO];       
-typedef double IA[N]; 
-typedef double JA[NON_ZERO];
+typedef double crsdata[NON_ZERO];
+typedef int crscol[NON_ZERO];
+typedef int crsrow[N+1];
 
+typedef double matrix[N][N];    // 行列
 typedef double vector[N];       // ベクトル
+typedef int ivector[N];
 
 
 
@@ -25,6 +30,15 @@ int print_vector(vector x)
     return 0;
 }
 
+int print_int_vector(ivector x)
+{
+    int i;
+    for(i = 0; i < 10; i++){
+        printf("vec[%d] = %d\n", i, x[i]);
+    }
+    return 0;
+}
+
 void copy_vector(vector y, const vector x)
 {
     int i;
@@ -32,8 +46,17 @@ void copy_vector(vector y, const vector x)
         y[i] = x[i];
 }
 
-double dotproduct(const vector x, const vector y)
+double crs_dotproduct(const crsdata data, const crscol col, const int si, const int ei, const vector y)
 {
+    int i;
+    double sum;
+    sum = 0;
+    for (i = si; i < ei; i++)
+        sum += data[i] * y[col[i]];
+    return sum;
+}
+
+double dotproduct(const vector x, const vector y) {
     int i;
     double sum;
     sum = 0;
@@ -41,16 +64,17 @@ double dotproduct(const vector x, const vector y)
         sum += x[i] * y[i];
     return sum;
 }
+
 double norm(vector x)
 {
     return sqrt(dotproduct(x, x));
 }
 
-void multiply_mv(vector Ab, matrix A, vector b)
+void multiply_mv(vector Ab, crsdata data, crsrow row, crscol col, vector b)
 {
     int i;
     for (i = 0; i < N; i++){
-        Ab[i] = dotproduct(A[i], b);
+        Ab[i] = crs_dotproduct(data, col, row[i], row[i+1], b);
     }
 }
 
@@ -62,27 +86,27 @@ void multiply_sv(vector ab, double a, const vector b)
    }
 }
 
-void forward_substitution(matrix L, vector x){
+void forward_substitution(const crsdata L, const crsrow row, const crscol col, vector x, const ivector Di){
     int i, j;
     for(i = 0; i < N; i++){
-        for(j = 0; j < i; j++){
-            x[i] -= L[j][i] * x[j];
+        for(j = row[i]; j < Di[i]; j++){
+            x[i] -= L[j] * x[col[j]];
         }
-        x[i] = x[i] / L[i][i];
+        x[i] /= L[Di[i]];
     }
 }
 
-void backward_substitution(matrix U, vector x){
+void backward_substitution(const crsdata U, const crsrow row, const crscol col, vector x, const ivector Di){
     int i, j;
     for(i = N - 1; i >= 0; i--){
-        for(j = i + 1; j < N; j++){
-            x[i] = x[i] - U[i][j] * x[j];
+        for(j = row[i+1] - 1; j > Di[i]; j--){
+            x[i] -= U[j] * x[col[j]];
         }
-        x[i] = x[i] / U[i][i];
+        x[i] /= U[Di[i]];
     }
 }
 
-void tri_cg(const int maxt, matrix A, const vector b, vector x, const double eps,
+void tri_cg(const int maxt, crsdata data, crsrow row, crscol col, const vector b, vector x, const double eps,
         const double eps_d, const double omega, const int m, int *itern) {
     int i, j, k;
     double eps_tilde_rxr0, eps_rxr0, pAp, alpha, beta, rxr, pre_rxr;
@@ -91,26 +115,32 @@ void tri_cg(const int maxt, matrix A, const vector b, vector x, const double eps
     static vector q;
     static vector Ap;
     static vector D;
+    static ivector Di;
     static vector s;
     static vector rt;
     double omega_i = 1 - 2 / omega;
 
 /* r := A x */
-    multiply_mv(r, A, x);
+    multiply_mv(r, data, row, col, x);
 
 /* r := b - A x */
 /* A := L + D/ω + L^T*/
     for (i = 0; i < N; i++){
         r[i] = b[i] - r[i];
-        D[i] = A[i][i];
-        A[i][i] /= omega;
+        for (j = row[i]; j < row[i+1]; j++){
+            if (col[j] == i){
+                D[i] = data[j];
+                Di[i] = j;
+                data[j] /= omega;
+                break;
+            }
+        }
     }
     /* eps_d_rxr0 := (εd * (r,r)) */
     eps_rxr0 = eps_d * dotproduct(r,r);
 
-
 /* r_tilde := (L^T + D/ω)^-1 * r */
-    backward_substitution(A, r);
+    backward_substitution(data, row, col, r, Di);
 /* rxr := (r, r) */
     rxr = dotproduct(r,r);
 
@@ -127,13 +157,13 @@ void tri_cg(const int maxt, matrix A, const vector b, vector x, const double eps
 
 /* s := (L + D/ω)^-1 * p  */
         copy_vector(s, p);
-        forward_substitution(A, s);
+        forward_substitution(data, row, col, s, Di);
 /* q := p + (1 - 2/ω)D(L + D/ω)^-1 * p  */
         for (i = 0; i < N; i++){
             q[i] = p[i] + omega_i * D[i] * s[i];
         }
 /* q := (L^T + D/ω)^-1 * q  */
-        backward_substitution(A, q);
+        backward_substitution(data, row, col, q, Di);
 /* Ap := s + q  */
         for (i = 0; i < N; i++){
             Ap[i] = s[i] + q[i];
@@ -162,8 +192,8 @@ void tri_cg(const int maxt, matrix A, const vector b, vector x, const double eps
             /* rt = (L^T + D/ω) * r */
             for (i = 0; i < N; i++){
                 rt[i] = 0;
-                for (j = i; j < N; j++){
-                    rt[i] += A[i][j] * r[j];
+                for (j = Di[i]; j < row[i+1]; j++){
+                    rt[i] += data[j] * r[col[j]];
                 }
             }
             if (dotproduct(rt, rt) < eps_rxr0)
@@ -192,6 +222,21 @@ int main(void) {
                  {0.0, 2.0, 0.0, 0.0, 0.0, 0.0, -2.0, 5.0, 2.0, 0.0},
                  {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 2.0},
                  {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0} };
+    crsdata data;
+    crscol col;
+    crsrow row;
+    int data_i = 0;
+    for (int i=0; i<N; i++){
+        for (int j=0; j<N; j++){
+            if (a[i][j] != 0.0){
+                data[data_i] = a[i][j];
+                col[data_i] = j;
+                data_i++;
+            }
+        }
+        row[i+1] = data_i;
+    }
+
     vector b = {3.0, 1.0, 4.0, 0.0, 5.0, -1.0, 6.0, -2.0, 7.0, -15.0};
     // 初期値を設定
     vector x = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
@@ -202,7 +247,7 @@ int main(void) {
 	cpu_time_0 = clock();
 
     // TRI preconditioning CG法でAx=bを解く
-    tri_cg(TMAX, a, b, x, EPS, EPS_D, OMEGA, M, &itern);
+    tri_cg(TMAX, data, row, col, b, x, EPS, EPS_D, OMEGA, M, &itern);
 
 	cpu_time_1 = clock();
 	cg_cpu_time = cpu_time_1 - cpu_time_0;

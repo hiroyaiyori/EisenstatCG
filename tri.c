@@ -64,7 +64,7 @@ void forward_substitution(matrix L, vector x){
     int i, j;
     for(i = 0; i < N; i++){
         for(j = 0; j < i; j++){
-            x[i] -= L[j][i] * x[j];
+            x[i] -= L[i][j] * x[j];
         }
         x[i] = x[i] / L[i][i];
     }
@@ -73,7 +73,7 @@ void forward_substitution(matrix L, vector x){
 void backward_substitution(matrix U, vector x){
     int i, j;
     for(i = N - 1; i >= 0; i--){
-        for(j = i + 1; j < N; j++){
+        for(j = N - 1; j > i; j--){
             x[i] = x[i] - U[i][j] * x[j];
         }
         x[i] = x[i] / U[i][i];
@@ -105,6 +105,7 @@ void tri_cg(const int maxt, matrix A, const vector b, vector x, const double eps
     }
     /* eps_d_rxr0 := (εd * (r,r)) */
     eps_rxr0 = eps_d * dotproduct(r,r);
+
 
 
 /* r_tilde := (L^T + D/ω)^-1 * r */
