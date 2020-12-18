@@ -110,7 +110,7 @@ void tri_cg(const int maxt, crsdata data, crsrow row, crscol col, const vector b
         const double eps_d, const double omega, const int m, int *itern) {
     int i, j, k;
     double eps_tilde_rxr0, eps_rxr0, pAp, alpha, beta, rxr, pre_rxr;
-    static vector r;
+    static vector r = {};
     static vector p;
     static vector q;
     static vector Ap;
