@@ -14,3 +14,6 @@ add_executable(tri ${TRI_SOURCE})
 
 set(CRSTRI_SOURCE crs_tri.c)
 add_executable(crs_tri ${CRSTRI_SOURCE})
+
+set(GPS_SOURCE gps_opt.c)
+add_executable(gps ${GPS_SOURCE})

@@ -31,12 +31,13 @@ int print_int_vector(ivector x)
     return 0;
 }
 
-void minimal_digree_all(crsrow row, int *md, int *mdi){
+void minimal_digree_all(crsrow row, int *mdi){
 	int i, rn;
-	for (int i=0; i < N; i++){
+	int md = N;
+	for (i=0; i < N; i++){
 		rn = row[i+1] - row[i];
-		if (*md > rn){
-			*md = rn;
+        if (md > rn){
+			md = rn;
 			*mdi = i;
 		}
 	}
@@ -75,10 +76,10 @@ int generate_level_structure(ivector level, level_index_structure level_index, i
 	level[0] = v;
 	x_level[v] = 1;
 	current_level = 2;
-	level_index[0] = 1;
+	level_index[0] = 0;
 	level_index[1] = 1;
 	leveled_x = 1;
-	
+
 	while(leveled_x < N){
 		for (i = level_index[current_level - 2]; i < level_index[current_level - 1]; i++){
 			s = level[i];
@@ -95,16 +96,19 @@ int generate_level_structure(ivector level, level_index_structure level_index, i
 				}
 			}
 			level_index[current_level] = leveled_x;
-			current_level++;
 		}
+        current_level++;
 	}
 }
 
 void degree_increasing_sort(ivector i_arr, const int len, crsrow row){
-	//TODO i_arr のindexをdegree increasing の順にソートする。
+	//i_arr のindexをdegree increasing の順にソートする。
 	int i,j, tmp;
+//	for (i = 0; i< len; i++){
+//        printf("degree = %d\n", row[i_arr[i] + 1] - row[i_arr[i]]);
+//    }
 	for (i = 0; i < len; i++){
-		for (j = 1; j < i; j++){
+		for (j = 1; j <= i; j++){
 			if (row[i_arr[j] + 1] - row[i_arr[j]] < row[i_arr[j - 1] + 1] - row[i_arr[j - 1]]){
 				tmp = i_arr[j];
 				i_arr[j] = i_arr[j - 1];
@@ -114,22 +118,30 @@ void degree_increasing_sort(ivector i_arr, const int len, crsrow row){
 	}
 }
 
-void pseudo_diameter(int *level_index_v, int *level_index_u, 
+void pseudo_diameter(int *level_index_v, int *level_index_u,
 		int *x_level_v, int *x_level_u, int *level_v, int *level_u, crsrow row, crscol col, int *u, int *v, int *level_depth){
-	int i, j, new_level_depth, u_width, min_u_width, u_index, u_depth; 
+	int i, j, k, new_level_depth, u_width, min_u_width, u_index, u_depth;
 	level_index_structure level_index_0, level_index_1;
 	ivector level_0, level_1, x_level_0, x_level_1;
 	int *po_0, *po_1;
 	po_0 = &level_0[0];
 	po_1 = &level_1[0];
 	min_u_width = NON_ZERO;
-	minimal_digree_all(row, level_depth, v);
+	minimal_digree_all(row, v);
 	new_level_depth = generate_level_structure(level_1, level_index_1, x_level_1, col, row, *v);
 	*level_depth = new_level_depth;
 	for (i = 0; i < TMAX; i++){
+        // TODO print code
+        printf("v = %d\n", *v);
 		if (i % 2 == 0){
 			degree_increasing_sort(po_1 + level_index_1[new_level_depth - 1], N - level_index_1[new_level_depth - 1], row);
+//			printf("---------------u-------------\n");
+//			print_int_vector(po_1 + level_index_1[new_level_depth - 1]);
+//			printf("len = %d\n", N - level_index_1[new_level_depth - 1]);
+
+
 			for (j = level_index_1[new_level_depth - 1]; j < N; j++){
+//			    printf("u candidate is %d\n", level_1[j]);
 				new_level_depth = generate_level_structure(level_0, level_index_0, x_level_0, col, row, level_1[j]);
 				if (*level_depth < new_level_depth){
 					*v = level_1[j];
@@ -143,8 +155,17 @@ void pseudo_diameter(int *level_index_v, int *level_index_u,
 				if (j == N-1){
 					*u = level_1[u_index];
 					u_depth = generate_level_structure(level_u, level_index_u, x_level_u, col, row, *u);
-					level_index_v = level_index_1;
-					level_v = level_1;
+                    //TODO stop copying like this. use poiter.
+					for (k = 0; k < N; k++){
+                        level_index_v[k] = level_index_1[k];
+                        level_v[k] = level_1[k];
+                        x_level_v[k] = x_level_1[k];
+					}
+
+//					printf("--x_level_1---\n");
+//					print_int_vector(x_level_1);
+//                    printf("--x_level_v---\n");
+//                    print_int_vector(x_level_v);
 					return;
 				}
 			}
@@ -164,8 +185,12 @@ void pseudo_diameter(int *level_index_v, int *level_index_u,
 				if (j == N-1){
 					*u = level_0[u_index];
 					u_depth = generate_level_structure(level_u, level_index_u, x_level_u, col, row, *u);
-					level_index_v = level_index_0;
-					level_v = level_0;
+					//TODO stop copying like this. use poiter.
+                    for (k = 0; k < N; k++){
+					    level_index_v[k] = level_index_0[k];
+					    level_v[k] = level_0[k];
+                        x_level_v[k] = x_level_0[k];
+                    }
 					return;
 				}
 			}
@@ -177,8 +202,7 @@ void minimizing_level_width(crsrow row, crscol col, ivector x_level, level_index
 		level_index_structure level_index_u, ivector level_v, ivector level_u, int *u, int *v, int *level_depth, int *chosed_element){
 	int i, j, k, l, m, cen, c,  max_v_width, max_u_width, tmp;
 	cen = 0;
-	k = 0;
-	l = 0;
+    memset(level_index, 0, N * sizeof(int));
 	ivector x_level_v, x_level_u;
 	ivector component_index = {0};
 	ivector component_elements ={0};
@@ -190,6 +214,7 @@ void minimizing_level_width(crsrow row, crscol col, ivector x_level, level_index
 		level_index_v[i] = level_index_v[i + 1] - level_index_v[i];
 		level_index_u[i] = level_index_u[i + 1] - level_index_u[i];
 	}
+
 	for (i = 0; i < N; i++){
 		x_level_u[i] = *level_depth + 1 - x_level_u[i];
 		if (x_level_v[i] == x_level_u[i]){
@@ -200,31 +225,43 @@ void minimizing_level_width(crsrow row, crscol col, ivector x_level, level_index
 			cen++;
 		}
 	}
-	m = 1;
-	i = 0;
+//    printf("@@@@@@@@@@@@@@@@@@@@@@@\n");
+//    printf("x_level_v\n");
+//    print_int_vector(x_level_v);
+//    printf("@@@@@@@@@@@@@@@@@@@@@@@\n");
+//    printf("x_level_u\n");
+//    print_int_vector(x_level_u);
+//	printf("@@@@@@@@@@@@@@@@@@@@@@@\n");
+//	print_int_vector(level_index);
+//    printf("@@@@@@@@@@@@@@@@@@@@@@@\n");
+
+	m = 0;
+    k = 0;
 	for (i = 0;i < N;i++){
 		if (component_index[i] == 0){
-			component_elements[k] == i;
+            m++;
+			component_elements[k] = i;
+			component_index[i] = m;
 			l = k;
 			k++;
 			while(l < k){
 				for (j = row[component_elements[l]]; j < row[component_elements[l] + 1]; j++){
 					c = col[j];
 					if (component_index[c] == 0){
-						component_elements[k] == c;
-						component_index[c] == m;
+						component_elements[k] = c;
+						component_index[c] = m;
 						k++;
 					}
 				}
 				l++;
 			}
 			component_sep_i[m] = l;
-			m++;
 			cen -= l;
 			if (cen == 0)
 				break;
 		}
 	}
+
 	// component_size argsort >>>> sorted_m
 	for (i = 0; i < m; i++){
 		component_number[i] = component_sep_i[i + 1] - component_sep_i[i];
@@ -242,15 +279,27 @@ void minimizing_level_width(crsrow row, crscol col, ivector x_level, level_index
 			}
 		}
 	}
-
+//    printf("component element\n");
+//    print_int_vector(component_elements);
+//    printf("m = %d\n", m);
+//    printf("component sepi\n");
+//    print_int_vector(component_sep_i);
+//    printf("component index\n");
+//    print_int_vector(component_index);
+//    printf("level_index\n");
+//    print_int_vector(level_index);
+    printf("level_index_v\n");
+    print_int_vector(level_index_v);
+    printf("level_index_u\n");
+    print_int_vector(level_index_u);
 	for(i = 0; i < m; i++){
 		max_v_width = 0;
 		max_u_width = 0;
-		for(j = 0; j > *level_depth; j++){
+		for(j = 0; j < *level_depth; j++){
 			k = level_index_v[j] - level_index[j];	
 			if (k > max_v_width)
 				max_v_width = k;
-			k = level_index_u[j] - level_index[j];	
+			k = level_index_u[*level_depth - j - 1] - level_index[j];
 			if (k > max_u_width)
 				max_u_width = k;
 		}
@@ -259,56 +308,60 @@ void minimizing_level_width(crsrow row, crscol col, ivector x_level, level_index
 				*chosed_element = 0;
 			for(j = component_sep_i[sorted_m[i]]; j < component_sep_i[sorted_m[i] + 1]; j++){
 				x_level[component_elements[j]] = x_level_v[component_elements[j]];
-				level_index[x_level[component_elements[j]]]++;
+				level_index[x_level[component_elements[j]] - 1]++;
 			}
 		}else if(max_v_width > max_u_width){
 			if (i == 0)
 				*chosed_element = 1;
 			for(j = component_sep_i[sorted_m[i]]; j < component_sep_i[sorted_m[i] + 1]; j++){
 				x_level[component_elements[j]] = x_level_u[component_elements[j]];
-				level_index[x_level[component_elements[j]]]++;
+				level_index[x_level[component_elements[j]] - 1]++;
 			}
 		}else{
 			max_v_width = 0;
 			max_u_width = 0;
-			for(j = 0; j > *level_depth; j++){
+			for(j = 0; j < *level_depth; j++){
 				k = level_index_v[j];	
 				if (k > max_v_width)
 					max_v_width = k;
-				k = level_index_u[j];	
+				k = level_index_u[*level_depth - j - 1];
 				if (k > max_u_width)
 					max_u_width = k;
 			}
+//			printf("max_v_width = %d\n", max_v_width);
+//            printf("max_u_width = %d\n", max_u_width);
 			if (max_v_width <= max_u_width){
 				if (i == 0)
 					*chosed_element = 0;
-
 				for(j = component_sep_i[sorted_m[i]]; j < component_sep_i[sorted_m[i] + 1]; j++){
 					x_level[component_elements[j]] = x_level_v[component_elements[j]];
-					level_index[x_level[component_elements[j]]]++;
+					level_index[x_level[component_elements[j]] - 1]++;
 				}
 			}else{
 				if (i == 0)
 					*chosed_element = 1;
 				for(j = component_sep_i[sorted_m[i]]; j < component_sep_i[sorted_m[i] + 1]; j++){
 					x_level[component_elements[j]] = x_level_u[component_elements[j]];
-					level_index[x_level[component_elements[j]]]++;
+					level_index[x_level[component_elements[j]] - 1]++;
 				}
+
 			}
 		}
 	}
+	printf("==level_index==\n");
+    print_int_vector(level_index);
 	
 	return;
 }
 
 void gps(crsrow row, crscol col, ivector numbered){
-	int i, j, j0, j0_init, j1, k, l, l0, l1, n0, n1, iv, iu, d, cl, lvl, v_s, v_e, u_s, u_e, v, u, w, level_depth, tmp, choosed_element, uv_switched_flag;
+	int i, j, j0, j0_init, j1, k, l, l0, l1, n0, n1, l_first_flg, wcand, lvl, v_s, v_e, u_s, u_e, v, u, w, level_depth, tmp, choosed_element, uv_switched_flag;
 	int min_degree, min_degree_n, md;
 	level_index_structure level_index_v, level_index_u;
 	ivector level_v, level_u;
 	level_index_structure level_width = {0};
-	j = 0;
 	l1 = 0;
+	l_first_flg = 0;
 	uv_switched_flag = 0;
 	ivector x_level;
 	ivector adj0 = {0};
@@ -323,6 +376,14 @@ void gps(crsrow row, crscol col, ivector numbered){
 		}
 		uv_switched_flag = 1;
 	}
+	printf("uv_switched_flag = %d\n", uv_switched_flag);
+    printf("chosed_element = %d\n", choosed_element);
+    printf("v = %d\n", v);
+    printf("u = %d\n", u);
+    printf("x_level\n");
+    print_int_vector(x_level);
+    printf("level_width\n");
+    print_int_vector(level_width);
 	numbered[0] = v;
 	j1 = 1;
 	if (uv_switched_flag){
@@ -335,36 +396,47 @@ void gps(crsrow row, crscol col, ivector numbered){
 	for (lvl = 0; lvl < level_depth; lvl++){
 		l0 = l1;
 		j0 = j1;
-		j0_init = j0;
-		j1 = l0;
 		l1 = l0 + level_width[lvl];
+		j1 = l1;
 		for (k = l0; k < j0; k++){
 			w = numbered[k];
 			n0 = 0;
 			n1 = 0;
-			for (i = row[w]; row[w+1]; i++){
+			for (i = row[w]; i < row[w+1]; i++){
+                printf("adj node = %d\n", col[i]);
+//                printf("row[w] = %d ,row[w + 1] = %d, i = %d\n", row[w],row[w + 1],i);
+//                printf("x_level[col[i]] = %d,  lvl + 1 = %d\n",x_level[col[i]], lvl + 1 );
 				if (x_level[col[i]] == lvl + 1){
-					for (l = l0; l < j0; l++){
-						if (col[i] == numbered[l])
-							break;
-						if (l = j0 - 1){
-							adj0[n0] = col[i];	
-							n0++;
-							break;
-						}
+                    for (l = l0; l < j0; l++) {
+                        if (col[i] == numbered[l]) {
+                            l_first_flg = 1;
+                            break;
+                        }
 					}
+					if (!l_first_flg){
+                        adj0[n0] = col[i];
+                        n0++;
+					}else{
+					   l_first_flg = 0;
+					}
+
+
 				}else if (x_level[col[i]] == lvl + 2){
 					for (l = l1; l < j1; l++){
-						if (col[i] == numbered[l])
-							break;
-						if (l = j1-1){
-							adj1[n1] = col[i];	
-							n1++;
-							break;
+						if (col[i] == numbered[l]){
+                            l_first_flg = 1;
+                            break;
 						}
 					}
+                    if (!l_first_flg){
+                        adj1[n1] = col[i];
+                        n1++;
+                    }else{
+                        l_first_flg = 0;
+                    }
 				}
-			}
+            }
+            printf("n0 = %d, n1 = %d\n", n0, n1);
 			degree_increasing_sort(adj0, n0, row);
 			degree_increasing_sort(adj1, n1, row);
 			for (i = 0; i < n0; i++)
@@ -374,52 +446,77 @@ void gps(crsrow row, crscol col, ivector numbered){
 			}
 			j0 += n0;
 			j1 += n1;
+			printf("numbered\n");
+			print_int_vector(numbered);
 		}
+
+	//TODO BUGFIX
 		if (uv_switched_flag){
 			v_e = v_s;
 			v_s = v_s - level_index_v[level_depth - lvl - 1];
 			u_e = u_s;
-			v_s = u_s - level_index_u[level_depth - lvl - 1];
+			u_s = u_s - level_index_u[lvl];
 		}else{
 			v_s = v_e;
 			v_e = v_e + level_index_v[lvl];
 			u_s = u_e;
-			u_e = u_e + level_index_u[lvl];
+			u_e = u_e + level_index_u[level_depth - lvl - 1];
 		}
-		while (j0 < l1){
+        printf("j0 = %d, l1 = %d \n", j0, l1);
+
+        while (j0 < l1){
 			// search another level lvl col
+			printf("::::::::::::::::::::::::::::::::::\n");
+            printf("v_s = %d, v_e = %d \n", v_s, v_e);
+            printf("u_s = %d, u_e = %d \n", u_s, u_e);
+            printf("l0 = %d, j0 = %d \n", l0, j0);
+
+            printf("::::::::::::::::::::::::::::::::::\n");
 			min_degree_n = -1;
 			min_degree = N;
 			for (i = v_s; i < v_e; i++){
-				if(x_level[level_v[i]] == lvl+1){
-					for (j = l0; j < j0; j++){
-						if (numbered[j] == level_v[i])
-							break;
-						if (j == j0 - 1 ){
-							md = row[level_v[i] + 1] - row[level_v[i]];
-							if (N > md){
-								min_degree = md;
-								min_degree_n = level_v[i];
-							}
-						}
+			    wcand = level_v[i];
+				if(x_level[wcand] == lvl+1){
+					for (j = l0; j < j0; j++) {
+                        if (numbered[j] == wcand)
+                            l_first_flg = 1;
+                        break;
+                    }
+					if (!l_first_flg){
+					    md = row[wcand + 1] - row[wcand];
+					    if (min_degree > md){
+					        min_degree = md;
+					        min_degree_n = wcand;
+					    }
+					}else{
+					    l_first_flg = 0;
 					}
 				}
 			}
 			for (i = u_s; i < u_e; i++){
-				if(x_level[level_u[i]] == lvl+1){
+			    wcand = level_u[N - 1 - i];
+                if(x_level[wcand] == lvl+1){
 					for (j = l0; j < j0; j++){
-						if (numbered[j] == level_u[i])
+                        printf("wcand = %d\n", wcand);
+					    printf("numbered[j] %d\n", numbered[j]);
+						if (numbered[j] == wcand)
+						    l_first_flg = 1;
 							break;
-						if (j = j0 - 1){
-							md = row[level_u[i] + 1] - row[level_u[i]];
-							if (min_degree > md){
-								min_degree = md;
-								min_degree_n = level_u[i];
-							}
 						}
+					if (!l_first_flg){
+					    printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
+                        printf("l_first_flag = %d\n", l_first_flg);
+					    md = row[wcand + 1] - row[wcand];
+					    if (min_degree > md){
+					        min_degree = md;
+					        min_degree_n = wcand;
+					    }
+					}else{
+					    l_first_flg = 0;
 					}
 				}
 			}
+			printf("min_digree_n : %d \n", min_degree_n);
 			numbered[j0] = min_degree_n;
 			j0_init = j0;
 			j0++;
@@ -427,12 +524,12 @@ void gps(crsrow row, crscol col, ivector numbered){
 				w = numbered[k];
 				n0 = 0;
 				n1 = 0;
-				for (i = row[w]; row[w+1]; i++){
+				for (i = row[w]; i < row[w+1]; i++){
 					if (x_level[col[i]] == lvl + 1){
 						for (l = l0; l < j0; l++){
 							if (col[i] == numbered[l])
 								break;
-							if (l = j0 - 1){
+							if (l == j0 - 1){
 								adj0[n0] = col[i];	
 								n0++;
 								break;
@@ -442,7 +539,7 @@ void gps(crsrow row, crscol col, ivector numbered){
 						for (l = l1; l < j1; l++){
 							if (col[i] == numbered[l])
 								break;
-							if (l = j1-1){
+							if (l == j1-1){
 								adj1[n1] = col[i];	
 								n1++;
 								break;
@@ -473,20 +570,16 @@ void gps(crsrow row, crscol col, ivector numbered){
 }
 
 void main(){
-	ivector arr = {4,5,6,7,8,9,10,1,2,3};
-	int* po = &arr[0];
-	po+=5;
-	printf("== %d ==", po[2]);
 	// 連立方程式 Ax = b
     // 行列Aは正定値対象行列
-    matrix a = { {5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-                 {2.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0},
-                 {0.0, 2.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-                 {0.0, 0.0, 2.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+    matrix a = { {5.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0},
+                 {0.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0},
+                 {0.0, 2.0, 5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+                 {1.0, 0.0, 0.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0},
                  {0.0, 0.0, 0.0, 2.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0},
                  {0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 2.0, 0.0, 0.0, 0.0},
                  {0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0, -2.0, 0.0, 0.0},
-                 {0.0, 2.0, 0.0, 0.0, 0.0, 0.0, -2.0, 5.0, 2.0, 0.0},
+                 {1.0, 2.0, 0.0, 0.0, 0.0, 0.0, -2.0, 5.0, 2.0, 0.0},
                  {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 2.0},
                  {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0} };
     crsdata data;
@@ -503,24 +596,77 @@ void main(){
         }
         row[i+1] = data_i;
     }
+    printf("--------row------------\n");
+    print_int_vector(row);
 
     // 初期値を設定
 
     int    i;
+    int v, vv;
     int itern;
 	long cpu_time_0, cpu_time_1, cg_cpu_time;
 	ivector numbered;
 	cpu_time_0 = clock();
 
     // TRI preconditioning CG法でAx=bを解く
-	gps(row, col, numbered);
+	// gps(row, col, numbered);
+    minimal_digree_all(row, &v);
 
-	cpu_time_1 = clock();
+    printf("v = %d\n", v);
+    printf("--------------- minimal_degree_all done -------------\n");
+
+    printf("--------------- generate_level_structure start -------------\n");
+    ivector level, x_level;
+    level_index_structure level_index;
+    i = generate_level_structure(level,  level_index, x_level, col, row, v);
+
+    printf("--------------- x_level -------------\n");
+    print_int_vector(x_level);
+    printf("--------------- generate_level_structure done -------------\n");
+
+
+    printf("--------------- degree_increasing_sort -------------\n");
+    ivector i_arr = {1,2,3,7,8,0,0,0,0,0};
+    int len = 5;
+    degree_increasing_sort(i_arr, len, row);
+    printf("=================== i_arr =========================\n");
+    print_int_vector(i_arr);
+    printf("--------------- degree_increasing_sort end-------------\n");
+
+
+    printf("--------------- pseudo_diameter start-------------\n");
+    level_index_structure level_index_v, level_index_u;
+    ivector x_level_v, x_level_u, level_v, level_u;
+    int u, level_depth;
+    pseudo_diameter(level_index_v, level_index_u, x_level_v, x_level_u, level_v, level_u, row, col, &u, &v, &level_depth);
+    printf("===============x_level_v===========\n");
+    print_int_vector(x_level_v);
+    printf("===============x_level_u=============\n");
+    print_int_vector(x_level_u);
+    printf("--------------- pseudo_diameter done-------------\n");
+
+
+    printf("--------------- minimizing_level_width start-------------\n");
+    int chosed_element;
+    minimizing_level_width(row, col, x_level,level_index, level_index_v, level_index_u,level_v, level_u, &u, &v, &level_depth, &chosed_element);
+    printf("x_level\n");
+    print_int_vector(x_level);
+    printf("--------------- minimizing_level_width done-------------\n");
+
+    printf("--------------- gps start -------------\n");
+    gps(row, col, numbered);
+    printf("numbered\n");
+    print_int_vector(numbered);
+    printf("--------------- gps done -------------\n");
+
+
+    cpu_time_1 = clock();
 	cg_cpu_time = cpu_time_1 - cpu_time_0;
-
     printf("--------------- calc done -------------\n");
-	printf("CG Method CPU time： %ld\n", cg_cpu_time);
-	print_int_vector(numbered);
+	printf("GPS ALGO CPU time： %ld\n", cg_cpu_time);
+
+
+	// print_int_vector(numbered);
     return;
 }
 
