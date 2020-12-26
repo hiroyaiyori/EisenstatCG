@@ -10,7 +10,6 @@
 #define EPS  (1.0e-6)
 #define EPS_D (2.0e-6)
 #define OMEGA  1.5
-#define LEVEL_END_FLAG = -1
 
 // CRS方式
 typedef double crsdata[NON_ZERO];
@@ -56,7 +55,6 @@ void print_crs_matrix(crsdata data, crscol col, crsrow row){
         }
         printf("\n");
     }
-
 }
 
 
@@ -134,11 +132,8 @@ int generate_level_structure(ivector level, level_index_structure level_index, i
 void degree_increasing_sort(ivector i_arr, const int len, crsrow row){
 	//i_arr のindexをdegree increasing の順にソートする。
 	int i,j, tmp;
-//	for (i = 0; i< len; i++){
-//        printf("degree = %d\n", row[i_arr[i] + 1] - row[i_arr[i]]);
-//    }
 	for (i = 0; i < len; i++){
-		for (j = 1; j <= i; j++){
+		for (j = 1; j < len - i; j++){
 			if (row[i_arr[j] + 1] - row[i_arr[j]] < row[i_arr[j - 1] + 1] - row[i_arr[j - 1]]){
 				tmp = i_arr[j];
 				i_arr[j] = i_arr[j - 1];
@@ -161,17 +156,10 @@ void pseudo_diameter(int *level_index_v, int *level_index_u,
 	new_level_depth = generate_level_structure(level_1, level_index_1, x_level_1, col, row, *v);
 	*level_depth = new_level_depth;
 	for (i = 0; i < TMAX; i++){
-        // TODO print code
-        printf("v = %d\n", *v);
 		if (i % 2 == 0){
 			degree_increasing_sort(po_1 + level_index_1[new_level_depth - 1], N - level_index_1[new_level_depth - 1], row);
-//			printf("---------------u-------------\n");
-//			print_int_vector(po_1 + level_index_1[new_level_depth - 1]);
-//			printf("len = %d\n", N - level_index_1[new_level_depth - 1]);
-
 
 			for (j = level_index_1[new_level_depth - 1]; j < N; j++){
-//			    printf("u candidate is %d\n", level_1[j]);
 				new_level_depth = generate_level_structure(level_0, level_index_0, x_level_0, col, row, level_1[j]);
 				if (*level_depth < new_level_depth){
 					*v = level_1[j];
@@ -191,12 +179,7 @@ void pseudo_diameter(int *level_index_v, int *level_index_u,
                         level_v[k] = level_1[k];
                         x_level_v[k] = x_level_1[k];
 					}
-
-//					printf("--x_level_1---\n");
-//					print_int_vector(x_level_1);
-//                    printf("--x_level_v---\n");
-//                    print_int_vector(x_level_v);
-					return;
+				return;
 				}
 			}
 		}else{
@@ -255,15 +238,6 @@ void minimizing_level_width(crsrow row, crscol col, ivector x_level, level_index
 			cen++;
 		}
 	}
-//    printf("@@@@@@@@@@@@@@@@@@@@@@@\n");
-//    printf("x_level_v\n");
-//    print_int_vector(x_level_v);
-//    printf("@@@@@@@@@@@@@@@@@@@@@@@\n");
-//    printf("x_level_u\n");
-//    print_int_vector(x_level_u);
-//	printf("@@@@@@@@@@@@@@@@@@@@@@@\n");
-//	print_int_vector(level_index);
-//    printf("@@@@@@@@@@@@@@@@@@@@@@@\n");
 
 	m = 0;
     k = 0;
@@ -291,14 +265,12 @@ void minimizing_level_width(crsrow row, crscol col, ivector x_level, level_index
 				break;
 		}
 	}
-
-	// component_size argsort >>>> sorted_m
 	for (i = 0; i < m; i++){
 		component_number[i] = component_sep_i[i + 1] - component_sep_i[i];
 		sorted_m[i] = i;
 	}
 	for (i = 0; i < m; i++){
-		for (j = 1; j < i; j++){
+		for (j = 1; j < m - i; j++){
 			if (component_number[j] > component_number[j - 1]){
 				tmp = component_number[j];
 				component_number[j] = component_number[j - 1];
@@ -309,19 +281,6 @@ void minimizing_level_width(crsrow row, crscol col, ivector x_level, level_index
 			}
 		}
 	}
-//    printf("component element\n");
-//    print_int_vector(component_elements);
-//    printf("m = %d\n", m);
-//    printf("component sepi\n");
-//    print_int_vector(component_sep_i);
-//    printf("component index\n");
-//    print_int_vector(component_index);
-//    printf("level_index\n");
-//    print_int_vector(level_index);
-    printf("level_index_v\n");
-    print_int_vector(level_index_v);
-    printf("level_index_u\n");
-    print_int_vector(level_index_u);
 	for(i = 0; i < m; i++){
 		max_v_width = 0;
 		max_u_width = 0;
@@ -358,9 +317,7 @@ void minimizing_level_width(crsrow row, crscol col, ivector x_level, level_index
 				if (k > max_u_width)
 					max_u_width = k;
 			}
-//			printf("max_v_width = %d\n", max_v_width);
-//            printf("max_u_width = %d\n", max_u_width);
-			if (max_v_width <= max_u_width){
+		    if (max_v_width <= max_u_width){
 				if (i == 0)
 					*chosed_element = 0;
 				for(j = component_sep_i[sorted_m[i]]; j < component_sep_i[sorted_m[i] + 1]; j++){
@@ -378,9 +335,6 @@ void minimizing_level_width(crsrow row, crscol col, ivector x_level, level_index
 			}
 		}
 	}
-	printf("==level_index==\n");
-    print_int_vector(level_index);
-	
 	return;
 }
 
@@ -406,14 +360,6 @@ void gps(crsrow row, crscol col, ivector numbered){
 		}
 		uv_switched_flag = 1;
 	}
-	printf("uv_switched_flag = %d\n", uv_switched_flag);
-    printf("chosed_element = %d\n", choosed_element);
-    printf("v = %d\n", v);
-    printf("u = %d\n", u);
-    printf("x_level\n");
-    print_int_vector(x_level);
-    printf("level_width\n");
-    print_int_vector(level_width);
 	numbered[0] = v;
 	j1 = 1;
 	if (uv_switched_flag){
@@ -433,9 +379,6 @@ void gps(crsrow row, crscol col, ivector numbered){
 			n0 = 0;
 			n1 = 0;
 			for (i = row[w]; i < row[w+1]; i++){
-                printf("adj node = %d\n", col[i]);
-//                printf("row[w] = %d ,row[w + 1] = %d, i = %d\n", row[w],row[w + 1],i);
-//                printf("x_level[col[i]] = %d,  lvl + 1 = %d\n",x_level[col[i]], lvl + 1 );
 				if (x_level[col[i]] == lvl + 1){
                     for (l = l0; l < j0; l++) {
                         if (col[i] == numbered[l]) {
@@ -466,7 +409,6 @@ void gps(crsrow row, crscol col, ivector numbered){
                     }
 				}
             }
-            printf("n0 = %d, n1 = %d\n", n0, n1);
 			degree_increasing_sort(adj0, n0, row);
 			degree_increasing_sort(adj1, n1, row);
 			for (i = 0; i < n0; i++)
@@ -476,11 +418,8 @@ void gps(crsrow row, crscol col, ivector numbered){
 			}
 			j0 += n0;
 			j1 += n1;
-			printf("numbered\n");
-			print_int_vector(numbered);
-		}
 
-	//TODO BUGFIX
+		}
 		if (uv_switched_flag){
 			v_e = v_s;
 			v_s = v_s - level_index_v[level_depth - lvl - 1];
@@ -492,16 +431,8 @@ void gps(crsrow row, crscol col, ivector numbered){
 			u_s = u_e;
 			u_e = u_e + level_index_u[level_depth - lvl - 1];
 		}
-        printf("j0 = %d, l1 = %d \n", j0, l1);
-
         while (j0 < l1){
 			// search another level lvl col
-			printf("::::::::::::::::::::::::::::::::::\n");
-            printf("v_s = %d, v_e = %d \n", v_s, v_e);
-            printf("u_s = %d, u_e = %d \n", u_s, u_e);
-            printf("l0 = %d, j0 = %d \n", l0, j0);
-
-            printf("::::::::::::::::::::::::::::::::::\n");
 			min_degree_n = -1;
 			min_degree = N;
 			for (i = v_s; i < v_e; i++){
@@ -527,16 +458,12 @@ void gps(crsrow row, crscol col, ivector numbered){
 			    wcand = level_u[N - 1 - i];
                 if(x_level[wcand] == lvl+1){
 					for (j = l0; j < j0; j++){
-                        printf("wcand = %d\n", wcand);
-					    printf("numbered[j] %d\n", numbered[j]);
-						if (numbered[j] == wcand)
+    					if (numbered[j] == wcand)
 						    l_first_flg = 1;
 							break;
 						}
 					if (!l_first_flg){
-					    printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
-                        printf("l_first_flag = %d\n", l_first_flg);
-					    md = row[wcand + 1] - row[wcand];
+    				    md = row[wcand + 1] - row[wcand];
 					    if (min_degree > md){
 					        min_degree = md;
 					        min_degree_n = wcand;
@@ -546,7 +473,6 @@ void gps(crsrow row, crscol col, ivector numbered){
 					}
 				}
 			}
-			printf("min_digree_n : %d \n", min_degree_n);
 			numbered[j0] = min_degree_n;
 			j0_init = j0;
 			j0++;
@@ -657,62 +583,54 @@ void main(){
         }
         row[i+1] = data_i;
     }
-    printf("--------row------------\n");
-    print_int_vector(row);
 
-    // 初期値を設定
-
-    int    i;
-    int v, vv;
-    int itern;
+    int v;
 	long cpu_time_0, cpu_time_1, cg_cpu_time;
 	ivector numbered;
 	cpu_time_0 = clock();
 
     // TRI preconditioning CG法でAx=bを解く
-	// gps(row, col, numbered);
     minimal_digree_all(row, &v);
 
-    printf("v = %d\n", v);
-    printf("--------------- minimal_degree_all done -------------\n");
-
-    printf("--------------- generate_level_structure start -------------\n");
-    ivector level, x_level;
-    level_index_structure level_index;
-    i = generate_level_structure(level,  level_index, x_level, col, row, v);
-
-    printf("--------------- x_level -------------\n");
-    print_int_vector(x_level);
-    printf("--------------- generate_level_structure done -------------\n");
-
-
-    printf("--------------- degree_increasing_sort -------------\n");
-    ivector i_arr = {1,2,3,7,8,0,0,0,0,0};
-    int len = 5;
-    degree_increasing_sort(i_arr, len, row);
-    printf("=================== i_arr =========================\n");
-    print_int_vector(i_arr);
-    printf("--------------- degree_increasing_sort end-------------\n");
-
-
-    printf("--------------- pseudo_diameter start-------------\n");
-    level_index_structure level_index_v, level_index_u;
-    ivector x_level_v, x_level_u, level_v, level_u;
-    int u, level_depth;
-    pseudo_diameter(level_index_v, level_index_u, x_level_v, x_level_u, level_v, level_u, row, col, &u, &v, &level_depth);
-    printf("===============x_level_v===========\n");
-    print_int_vector(x_level_v);
-    printf("===============x_level_u=============\n");
-    print_int_vector(x_level_u);
-    printf("--------------- pseudo_diameter done-------------\n");
-
-
-    printf("--------------- minimizing_level_width start-------------\n");
-    int chosed_element;
-    minimizing_level_width(row, col, x_level,level_index, level_index_v, level_index_u,level_v, level_u, &u, &v, &level_depth, &chosed_element);
-    printf("x_level\n");
-    print_int_vector(x_level);
-    printf("--------------- minimizing_level_width done-------------\n");
+//    printf("--------------- minimal_degree_all done -------------\n");
+//
+//    printf("--------------- generate_level_structure start -------------\n");
+//    ivector level, x_level;
+//    level_index_structure level_index;
+//    generate_level_structure(level,  level_index, x_level, col, row, v);
+//
+//    printf("--------------- x_level -------------\n");
+//    print_int_vector(x_level);
+//    printf("--------------- generate_level_structure done -------------\n");
+//
+//
+//    printf("--------------- degree_increasing_sort -------------\n");
+//    ivector i_arr = {1,5,3,7,8,2,0,0,0,0};
+//    int len = 6;
+//    degree_increasing_sort(i_arr, len, row);
+//    printf("=================== i_arr =========================\n");
+//    print_int_vector(i_arr);
+//    printf("--------------- degree_increasing_sort end-------------\n");
+//
+//
+//    printf("--------------- pseudo_diameter start-------------\n");
+//    level_index_structure level_index_v, level_index_u;
+//    ivector x_level_v, x_level_u, level_v, level_u;
+//    int u, level_depth;
+//    pseudo_diameter(level_index_v, level_index_u, x_level_v, x_level_u, level_v, level_u, row, col, &u, &v, &level_depth);
+//    printf("===============x_level_v===========\n");
+//    print_int_vector(x_level_v);
+//    printf("===============x_level_u=============\n");
+//    print_int_vector(x_level_u);
+//    printf("--------------- pseudo_diameter done-------------\n");
+//
+//
+//    printf("--------------- minimizing_level_width start-------------\n");
+//    int chosed_element;
+//    minimizing_level_width(row, col, x_level,level_index, level_index_v, level_index_u,level_v, level_u, &u, &v, &level_depth, &chosed_element);
+//    printf("x_level\n");
+//    print_int_vector(x_level);
+//    printf("--------------- minimizing_level_width done-------------\n");
 
     printf("--------------- gps start -------------\n");
     gps(row, col, numbered);
@@ -724,8 +642,6 @@ void main(){
     crsrow optrow = {0};
     opt_mat(numbered, data, optdata, col, optcol, row, optrow);
 
-    printf("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n");
-    print_double_vector(data);
     printf("&&&       original matrix        &&&\n");
     print_crs_matrix(data, col, row);
     printf("&&&       original matrix        &&&\n");
@@ -738,8 +654,6 @@ void main(){
     printf("--------------- calc done -------------\n");
 	printf("GPS ALGO CPU time： %ld\n", cg_cpu_time);
 
-
-	// print_int_vector(numbered);
     return;
 }
 
