@@ -30,6 +30,36 @@ int print_int_vector(ivector x)
     }
     return 0;
 }
+void print_double_vector(double *x){
+    int i;
+    for(i = 0; i < 10; i++){
+        printf("vec[%d] = %3.1lf\n", i, x[i]);
+    }
+    return;
+}
+void print_crs_matrix(crsdata data, crscol col, crsrow row){
+    int i, j, k, flg;
+    flg = 0;
+    for (i = 0; i < N; i++){
+        for (j = 0; j < N; j++){
+            for (k = row[i]; k < row[i + 1]; k++){
+                if (col[k] == j){
+                    printf("%3.1lf\t", data[k]);
+                    flg = 1;
+                    break;
+                }
+            }
+            if (!flg){
+                printf("%3.1lf\t", 0.0);
+            }
+            flg = 0;
+        }
+        printf("\n");
+    }
+
+}
+
+
 
 void minimal_digree_all(crsrow row, int *mdi){
 	int i, rn;
@@ -575,13 +605,13 @@ void main(){
     matrix a = { {5.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0},
                  {0.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0},
                  {0.0, 2.0, 5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-                 {1.0, 0.0, 0.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-                 {0.0, 0.0, 0.0, 2.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0},
-                 {0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 2.0, 0.0, 0.0, 0.0},
-                 {0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0, -2.0, 0.0, 0.0},
-                 {1.0, 2.0, 0.0, 0.0, 0.0, 0.0, -2.0, 5.0, 2.0, 0.0},
+                 {1.0, 0.0, 0.0, 5.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0},
+                 {0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0},
+                 {0.0, 0.0, 0.0, 0.0, 0.0, 5.0, 2.0, 0.0, 0.0, 0.0},
+                 {0.0, 0.0, 0.0, 1.0, 0.0, 2.0, 5.0, 0.0, 0.0, 1.0},
+                 {1.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.0, 2.0, 0.0},
                  {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 2.0},
-                 {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0} };
+                 {0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 2.0, 5.0} };
     crsdata data;
     crscol col;
     crsrow row;
@@ -658,7 +688,46 @@ void main(){
     printf("numbered\n");
     print_int_vector(numbered);
     printf("--------------- gps done -------------\n");
+    crsdata optdata;
+    crscol optcol;
+    crsrow optrow = {0};
+    ivector optrow_n, i_numbered;
+    int ni, j, k, k_init, l, tmp;
+    double tmpdata;
 
+    for (i = 0; i < N; i++){
+        ni = numbered[i];
+        i_numbered[ni] = i;
+        optrow_n[i] = row[ni + 1] - row[ni];
+        optrow[i + 1] = optrow[i] + optrow_n[i];
+    }
+    k = 0;
+    for (i = 0; i < N; i++){
+        k_init = k;
+        for (j = row[numbered[i]]; j < row[numbered[i] + 1]; j++){
+            optcol[k] = i_numbered[col[j]];
+            optdata[k] = data[j];
+            for (l = k; l > k_init; l--){
+                if (optcol[l] < optcol[l - 1]){
+                    tmp = optcol[l];
+                    optcol[l] = optcol[l - 1];
+                    optcol[l - 1] = tmp;
+                    tmpdata = optdata[l];
+                    optdata[l] = optdata[l - 1];
+                    optdata[l - 1] = tmpdata;
+                }
+            }
+            k++;
+        }
+    }
+    printf("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n");
+    print_double_vector(data);
+    printf("&&&       original matrix        &&&\n");
+    print_crs_matrix(data, col, row);
+    printf("&&&       original matrix        &&&\n");
+    printf("&&&       bandwidth minimized matrix        &&&\n");
+    print_crs_matrix(optdata, optcol, optrow);
+    printf("&&&       bandwidth minimized matrix        &&&\n");
 
     cpu_time_1 = clock();
 	cg_cpu_time = cpu_time_1 - cpu_time_0;
