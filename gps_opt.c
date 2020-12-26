@@ -598,6 +598,37 @@ void gps(crsrow row, crscol col, ivector numbered){
 	}
 	return;
 }
+void opt_mat(ivector numbered, crsdata data, crsdata optdata, crscol col, crscol optcol, crsrow row, crsrow optrow){
+    ivector optrow_n, i_numbered;
+    int i, ni, j, k, k_init, l, tmp;
+    double tmpdata;
+
+    for (i = 0; i < N; i++){
+        ni = numbered[i];
+        i_numbered[ni] = i;
+        optrow_n[i] = row[ni + 1] - row[ni];
+        optrow[i + 1] = optrow[i] + optrow_n[i];
+    }
+    k = 0;
+    for (i = 0; i < N; i++){
+        k_init = k;
+        for (j = row[numbered[i]]; j < row[numbered[i] + 1]; j++){
+            optcol[k] = i_numbered[col[j]];
+            optdata[k] = data[j];
+            for (l = k; l > k_init; l--){
+                if (optcol[l] < optcol[l - 1]){
+                    tmp = optcol[l];
+                    optcol[l] = optcol[l - 1];
+                    optcol[l - 1] = tmp;
+                    tmpdata = optdata[l];
+                    optdata[l] = optdata[l - 1];
+                    optdata[l - 1] = tmpdata;
+                }
+            }
+            k++;
+        }
+    }
+}
 
 void main(){
 	// 連立方程式 Ax = b
@@ -691,35 +722,8 @@ void main(){
     crsdata optdata;
     crscol optcol;
     crsrow optrow = {0};
-    ivector optrow_n, i_numbered;
-    int ni, j, k, k_init, l, tmp;
-    double tmpdata;
+    opt_mat(numbered, data, optdata, col, optcol, row, optrow);
 
-    for (i = 0; i < N; i++){
-        ni = numbered[i];
-        i_numbered[ni] = i;
-        optrow_n[i] = row[ni + 1] - row[ni];
-        optrow[i + 1] = optrow[i] + optrow_n[i];
-    }
-    k = 0;
-    for (i = 0; i < N; i++){
-        k_init = k;
-        for (j = row[numbered[i]]; j < row[numbered[i] + 1]; j++){
-            optcol[k] = i_numbered[col[j]];
-            optdata[k] = data[j];
-            for (l = k; l > k_init; l--){
-                if (optcol[l] < optcol[l - 1]){
-                    tmp = optcol[l];
-                    optcol[l] = optcol[l - 1];
-                    optcol[l - 1] = tmp;
-                    tmpdata = optdata[l];
-                    optdata[l] = optdata[l - 1];
-                    optdata[l - 1] = tmpdata;
-                }
-            }
-            k++;
-        }
-    }
     printf("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n");
     print_double_vector(data);
     printf("&&&       original matrix        &&&\n");
