@@ -1,9 +1,13 @@
+//
+// Created by 伊従寛哉 on 2020/12/28.
+//
+
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
 #include "matrix_setting.h"
 
-#define M    3 // The number to check convergence
+#define M    3
 #define TMAX 100
 #define EPS  (1.0e-6)
 #define EPS_D (2.0e-6)
@@ -17,7 +21,6 @@ typedef int crsrow[N+1];
 typedef double matrix[N][N];    // 行列
 typedef double vector[N];       // ベクトル
 typedef int ivector[N];
-
 
 
 int print_vector(vector x)
@@ -38,11 +41,114 @@ int print_int_vector(ivector x)
     return 0;
 }
 
+void print_matrix_image(crscol col, crsrow row){
+    int i, j, k, flg;
+    flg = 0;
+    for (i = 0; i < N; i++){
+        for (j = 0; j < N; j++){
+            for (k = row[i]; k < row[i + 1]; k++){
+                if (col[k] == j){
+                    printf("◉ ");
+                    flg = 1;
+                    break;
+                }
+            }
+            if (!flg){
+                printf("◯ ");
+            }
+            flg = 0;
+        }
+        printf("\n");
+    }
+}
+
 void copy_vector(vector y, const vector x)
 {
     int i;
     for (i = 0; i < N; i++)
         y[i] = x[i];
+}
+
+void lhat_res_split(crsdata data, crsdata resdata, crscol col, crscol rescol, crsrow row, crsrow resrow, int *resn, int *hn){
+    int i, j, k, blcsep, rtmprown, htmprown;
+    int spl_p[PARALLEL_N + 1] = {0};
+    int rnp = (N - 1) % PARALLEL_N;
+    int quo = (N - 1) / PARALLEL_N;
+    *hn = 0;
+    *resn = 0;
+    blcsep = 0;
+    htmprown = 0;
+    rtmprown = 0;
+    for (i = 0; i < PARALLEL_N; i++){
+        if (i < rnp)
+            spl_p[i + 1] = spl_p[i] + quo + 1;
+        else
+            spl_p[i + 1] = spl_p[i] + quo;
+    }
+    if (spl_p[PARALLEL_N] != N - 1){
+        printf("\n++++++++++++++++++++++++++++++++ERROR!!++++++++++++++++++++++++++%d\n", spl_p[PARALLEL_N]);
+    }
+    for (i = 0; i < PARALLEL_N; i++){
+        j =  spl_p[i];
+        for (k = blcsep; k < row[j + 1]; k++){
+            if (col[k] <  1 + spl_p[i + 1]){
+                data[*hn] = data[k];
+                col[*hn] = col[k];
+                *hn+=1;
+            }else {
+                resdata[*resn] = data[k];
+                rescol[*resn] = col[k];
+                *resn+=1;
+            }
+        }
+        row[j] = htmprown;
+        resrow[j] = rtmprown;
+        htmprown = *hn;
+        rtmprown = *resn;
+        for (j = spl_p[i] + 1; j < spl_p[i + 1]; j++){
+            for (k = row[j]; k < row[j + 1]; k++){
+                if (col[k] <  spl_p[i]){
+                    resdata[*resn] = data[k];
+                    rescol[*resn] = col[k];
+                    *resn += 1;
+                }else if (col[k] > spl_p[i + 1]){
+                    resdata[*resn] = data[k];
+                    rescol[*resn] = col[k];
+                    *resn+=1;
+                }else {
+                    data[*hn] = data[k];
+                    col[*hn] = col[k];
+                    *hn+=1;
+                }
+            }
+            row[j] = htmprown;
+            resrow[j] = rtmprown;
+            htmprown = *hn;
+            rtmprown = *resn;
+        }
+        j = spl_p[i + 1];
+        for (k = row[j]; k < row[j + 1]; k++){
+            if (col[k] <  spl_p[i]){
+                resdata[*resn] = data[k];
+                rescol[*resn] = col[k];
+                *resn+=1;
+            }else {
+                data[*hn] = data[k];
+                col[*hn] = col[k];
+                *hn+=1;
+                if (col[k] == j){
+                    blcsep = k + 1;
+                    break;
+                }
+            }
+        }
+    }
+    row[N - 1] = htmprown;
+    resrow[N - 1] = rtmprown;
+    row[N] = *hn;
+    resrow[N] = *resn;
+
+    return;
 }
 
 double crs_dotproduct(const crsdata data, const crscol col, const int si, const int ei, const vector y)
@@ -79,10 +185,10 @@ void multiply_mv(vector Ab, crsdata data, crsrow row, crscol col, vector b)
 
 void multiply_sv(vector ab, double a, const vector b)
 {
-   int i;
-   for (i = 0; i < N; i++){
-       ab[i] = a * b[i];
-   }
+    int i;
+    for (i = 0; i < N; i++){
+        ab[i] = a * b[i];
+    }
 }
 
 void forward_substitution(const crsdata L, const crsrow row, const crscol col, vector x, const ivector Di){
@@ -105,9 +211,12 @@ void backward_substitution(const crsdata U, const crsrow row, const crscol col, 
     }
 }
 
-void tri_cg(const int maxt, crsdata data, crsrow row, crscol col, const vector b, vector x, const double eps,
-        const double eps_d, const double omega, const int m, int *itern) {
+void cache_cache(const int maxt, crsdata data, crsrow row, crscol col, const vector b, vector x, const double eps,
+            const double eps_d, const double omega, const int m, int *itern) {
     int i, j, k;
+    crsdata resdata;
+    crscol rescol;
+    crsrow resrow;
     double eps_tilde_rxr0, eps_rxr0, pAp, alpha, beta, rxr, pre_rxr;
     static vector r = {};
     static vector p;
@@ -122,6 +231,9 @@ void tri_cg(const int maxt, crsdata data, crsrow row, crscol col, const vector b
 /* r := A x */
     multiply_mv(r, data, row, col, x);
 
+/* L := L^hat*/
+    int resn, hn;
+    lhat_res_split(data, resdata, col, rescol, row, resrow, &resn, &hn);
 /* r := b - A x */
 /* A := L + D/ω + L^T*/
     for (i = 0; i < N; i++){
@@ -211,19 +323,28 @@ void tri_cg(const int maxt, crsdata data, crsrow row, crscol col, const vector b
 int main(void) {
     // 連立方程式 Ax = b
     // 行列Aは正定値対象行列
-    matrix a = { {5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-                 {2.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0},
-                 {0.0, 2.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-                 {0.0, 0.0, 2.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-                 {0.0, 0.0, 0.0, 2.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0},
-                 {0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 2.0, 0.0, 0.0, 0.0},
-                 {0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0, -2.0, 0.0, 0.0},
-                 {0.0, 2.0, 0.0, 0.0, 0.0, 0.0, -2.0, 5.0, 2.0, 0.0},
-                 {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 2.0},
-                 {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0} };
-    crsdata data;
-    crscol col;
-    crsrow row;
+    matrix a = { {5.0, 2.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
+                 {2.0, 5.0, 2.0, 1.0, 1.0, 1.0, 1.0, 2.0, 1.0, 1.0},
+                 {1.0, 2.0, 5.0, 2.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
+                 {1.0, 1.0, 2.0, 5.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+                 {1.0, 1.0, 1.0, 2.0, 5.0, 2.0, 1.0, 1.0, 0.0, 0.0},
+                 {1.0, 1.0, 1.0, 0.0, 2.0, 5.0, 2.0, 1.0, 0.0, 0.0},
+                 {1.0, 1.0, 1.0, 0.0, 1.0, 2.0, 5.0, -2.0, 0.0, 0.0},
+                 {1.0, 2.0, 1.0, 0.0, 1.0, 1.0, -2.0, 5.0, 2.0, 0.0},
+                 {1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 2.0},
+                 {1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 5.0} };
+    int nz = 0;
+    for (int i = 0; i < N; i++){
+        for (int j = 0; j < N; j++){
+            if (a[i][j] != 0.0)
+                nz++;
+        }
+    }
+    printf("nz = %d", nz);
+
+    crsdata data, resdata;
+    crscol col, rescol;
+    crsrow row, resrow;
     int data_i = 0;
     for (int i=0; i<N; i++){
         for (int j=0; j<N; j++){
@@ -235,31 +356,15 @@ int main(void) {
         }
         row[i+1] = data_i;
     }
+    printf("\noriginal matrix\n");
+    print_matrix_image(col, row);
 
-    vector b = {3.0, 1.0, 4.0, 0.0, 5.0, -1.0, 6.0, -2.0, 7.0, -15.0};
-    // 初期値を設定
-    vector x = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+    int resn, hn;
+    lhat_res_split(data, resdata, col, rescol, row, resrow, &resn, &hn);
+    printf("\nhat matrix\n");
+    print_matrix_image(col, row);
+    printf("\nresidual matrix\n");
+    print_matrix_image(rescol, resrow);
 
-    int    i;
-    int itern;
-	long cpu_time_0, cpu_time_1, cg_cpu_time;
-	cpu_time_0 = clock();
-
-    // TRI preconditioning CG法でAx=bを解く
-    tri_cg(TMAX, data, row, col, b, x, EPS, EPS_D, OMEGA, M, &itern);
-
-	cpu_time_1 = clock();
-	cg_cpu_time = cpu_time_1 - cpu_time_0;
-
-    vector ans_x = {0.637207, -0.093018, 1.42197, -1.4619, 2.23279, -1.62006, 1.31737, -1.32663, 3.72697, -4.49079};
-
-    printf("--------------- calc done -------------\n");
-	printf("CG Method CPU time： %ld\n", cg_cpu_time);
-    double err_sum = 0.0;
-    for(i = 0; i < N; i++){
-        err_sum += (x[i] - ans_x[i]) * (x[i] - ans_x[i]);
-        printf("x[%d] = %2g\n", i, x[i]);
-    }
-    printf("error %2g\n", err_sum);
     return 0;
 }

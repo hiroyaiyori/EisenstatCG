@@ -2,6 +2,8 @@
 #include <string.h>
 #include "gps_opt.h"
 
+#define TMAX 100
+
 
 int print_int_vector(ivector x)
 {

@@ -4,13 +4,8 @@
 
 #ifndef CG_METHOD_GPS_OPT_H
 #define CG_METHOD_GPS_OPT_H
+#include "matrix_setting.h"
 
-#define N 48
-#define NON_ZERO	224 * 2 - N
-#define TMAX 100
-#define EPS  (1.0e-6)
-#define EPS_D (2.0e-6)
-#define OMEGA  1.5
 
 // CRS方式
 typedef double crsdata[NON_ZERO];

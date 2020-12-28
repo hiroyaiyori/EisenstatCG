@@ -20,3 +20,6 @@ add_executable(gps ${GPS_SOURCE})
 
 set(PARSE_GPS_SOURCE gps_opt.c mmio.c parse_and_gps.c)
 add_executable(PG ${PARSE_GPS_SOURCE})
+
+set(CACHE_SOURCE cachecache.c)
+add_executable(cache ${CACHE_SOURCE})
