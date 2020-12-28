@@ -46,13 +46,13 @@ void print_matrix_image(crscol col, crsrow row){
         for (j = 0; j < N; j++){
             for (k = row[i]; k < row[i + 1]; k++){
                 if (col[k] == j){
-                    printf("◉");
+                    printf("◉ ");
                     flg = 1;
                     break;
                 }
             }
             if (!flg){
-                printf("◯");
+                printf("◯ ");
             }
             flg = 0;
         }

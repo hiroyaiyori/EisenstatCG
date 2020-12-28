@@ -141,6 +141,22 @@ int main(int argc, char *argv[])
     fprintf(stdout, "\n\n\n\n\n---------@@@@@@@@@@@@@@@@@ minimized matrix @@@@@@@@@@@@@@@@@-----------\n\n\n\n\n");
     print_matrix_image(optcol, optrow);
 
+    int mb, mbopt;
+    mb = 0;
+    mbopt = 0;
+    for (i = 0; i < N; i++){
+        if (mb < col[row[i + 1] - 1] - i){
+            mb = col[row[i + 1] - 1] - i;
+        }
+        if (mbopt < optcol[optrow[i + 1] - 1] - i){
+            mbopt = optcol[optrow[i + 1] - 1] - i;
+        }
+
+    }
+    printf("\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+    printf("\n\tbandwidth decreased %d to %d\n", mb, mbopt);
+    printf("\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+
     return 0;
 }
 
