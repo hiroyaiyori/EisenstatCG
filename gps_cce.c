@@ -1,14 +1,16 @@
 //
-// Created by Hiroya Iyori on 2020/12/27.
+// Created by 伊従寛哉 on 2020/12/29.
 //
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "mmio.h"
 #include "gps_opt.h"
+#include "print_util.h"
+#include "cachecache.h"
 
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]){
     int ret_code;
     MM_typecode matcode;
     FILE *f;
@@ -104,7 +106,7 @@ int main(int argc, char *argv[])
             l++;
         }
     }
-   if (l != NON_ZERO){
+    if (l != NON_ZERO){
         printf("something wrong with making csr");
         exit(1);
     }
@@ -156,6 +158,34 @@ int main(int argc, char *argv[])
     printf("\n\tbandwidth decreased %d to %d\n", mb, mbopt);
     printf("\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
 
+    vector x;
+    for (i = 0; i < N; i++){
+        x[i] = 1.0;
+    }
+    vector b = {};
+    int itern;
+    long cpu_time_0, cpu_time_1, cg_cpu_time;
+    cpu_time_0 = clock();
+
+    // TRI preconditioning CG法でAx=bを解く
+    cache_cache(TMAX, val, row, col, b, x, EPS, EPS_D, OMEGA, M, &itern);
+
+    cpu_time_1 = clock();
+    cg_cpu_time = cpu_time_1 - cpu_time_0;
+
+    printf("--------------- calc done -------------\n");
+    printf("CG Method CPU time： %ld\n", cg_cpu_time);
+    vector ans_x = {};
+    for (i = 0; i < N; i++){
+        printf("%2g, ",x[i]);
+    }
+    printf("\n");
+    double err_sum;
+    err_sum = 0;
+    for(i = 0; i < N; i++){
+        err_sum += (x[i] - ans_x[i]) * (x[i] - ans_x[i]);
+        printf("x[%d] = %2g\n", i, x[i]);
+    }
+    printf("error %2g\n", err_sum);
     return 0;
 }
-

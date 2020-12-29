@@ -2,6 +2,7 @@
 #include <math.h>
 #include <time.h>
 #include "matrix_setting.h"
+#include "print_util.h"
 
 #define M    3 // The number to check convergence
 #define TMAX 100
@@ -20,23 +21,7 @@ typedef int ivector[N];
 
 
 
-int print_vector(vector x)
-{
-    int i;
-    for(i = 0; i < N; i++){
-        printf("vec[%d] = %2g\n", i, x[i]);
-    }
-    return 0;
-}
 
-int print_int_vector(ivector x)
-{
-    int i;
-    for(i = 0; i < 10; i++){
-        printf("vec[%d] = %d\n", i, x[i]);
-    }
-    return 0;
-}
 
 void copy_vector(vector y, const vector x)
 {
@@ -110,13 +95,13 @@ void tri_cg(const int maxt, crsdata data, crsrow row, crscol col, const vector b
     int i, j, k;
     double eps_tilde_rxr0, eps_rxr0, pAp, alpha, beta, rxr, pre_rxr;
     static vector r = {};
-    static vector p;
-    static vector q;
-    static vector Ap;
-    static vector D;
-    static ivector Di;
-    static vector s;
-    static vector rt;
+    static vector p = {};
+    static vector q = {};
+    static vector Ap = {};
+    static vector D = {};
+    static ivector Di = {};
+    static vector s = {};
+    static vector rt = {};
     double omega_i = 1 - 2 / omega;
 
 /* r := A x */
@@ -143,9 +128,8 @@ void tri_cg(const int maxt, crsdata data, crsrow row, crscol col, const vector b
 /* rxr := (r, r) */
     rxr = dotproduct(r,r);
 
-    /* eps_tilde_rxr0 := (ε * (r_tilde,r_tilde)) */
+/* eps_tilde_rxr0 := (ε * (r_tilde,r_tilde)) */
     eps_tilde_rxr0 = eps * rxr;
-
 
 /* p = r */
     copy_vector(p, r);

@@ -17,13 +17,7 @@ typedef double matrix[N][N];    // matrix
 typedef double vector[N];       // vector
 typedef int ivector[N];
 
-int print_int_vector(ivector x);
 
-void print_double_vector(double *x);
-
-void print_crs_matrix(crsdata data, crscol col, crsrow row);
-
-void print_matrix_image(crscol col, crsrow row);
 
 void minimal_digree_all(crsrow row, int *mdi);
 

@@ -11,4 +11,14 @@
 #define NON_ZERO 43 * 2 - N
 #define PARALLEL_N  3
 
+
+// CRS方式
+typedef double crsdata[NON_ZERO];
+typedef int crscol[NON_ZERO];
+typedef int crsrow[N+1];
+
+typedef double matrix[N][N];    // 行列
+typedef double vector[N];       // ベクトル
+typedef int ivector[N];
+
 #endif //CG_METHOD_MATRIX_SETTING_H
