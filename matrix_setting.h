@@ -9,6 +9,6 @@
  */
 #define N 10
 #define NON_ZERO 43 * 2 - N
-#define PARALLEL_N  2
+#define PARALLEL_N  3
 
 #endif //CG_METHOD_MATRIX_SETTING_H

@@ -12,7 +12,7 @@ add_executable(eisenstat ${EISENSTAT_SOURCE})
 set(TRI_SOURCE tri.c)
 add_executable(tri ${TRI_SOURCE})
 
-set(CRSTRI_SOURCE crs_tri.c gps_opt.h test_gpsopt.c)
+set(CRSTRI_SOURCE crs_tri.c)
 add_executable(crs_tri ${CRSTRI_SOURCE})
 
 set(GPS_SOURCE gps_opt.c gps_opt.h test_gpsopt.c)
