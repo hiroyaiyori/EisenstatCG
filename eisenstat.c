@@ -1,24 +1,15 @@
 #include <stdio.h>
 #include <math.h>
+#include "matrix_setting.h"
 
-#define N    10
 #define TMAX 100
 #define EPS  (1.0e-6)
 #define OMEGA  1.5
 
-typedef double vector[N];       // ベクトル
-typedef double matrix[N][N];    // 行列
 
 
 
-int print_vector(vector x)
-{
-    int i;
-    for(i = 0; i < N; i++){
-        printf("vec[%d] = %2g\n", i, x[i]);
-    }
-    return 0;
-}
+
 
 void copy_vector(vector y, const vector x)
 {

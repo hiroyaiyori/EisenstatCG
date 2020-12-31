@@ -7,8 +7,8 @@
 /*
  * Define here the length and the element number of Non Zeros.
  */
-#define N 1234
-#define NON_ZERO  2100225 * 2 - N
+#define N 4704
+#define NON_ZERO  54730 * 2 - N
 #define PARALLEL_N  4
 
 

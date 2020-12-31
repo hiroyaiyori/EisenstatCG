@@ -74,7 +74,10 @@ int main(int argc, char *argv[]){
     l = 0;
     for (i=0; i<nz; i++)
     {
+//        fscanf(f, "%d %d\n", &col[l], &r_row[l]);
+//        val[l] = 1;
         fscanf(f, "%d %d %lg\n", &col[l], &r_row[l], &val[l]);
+
         if( i == 0)
             init_val = val[0];
         val[l] /= init_val;
@@ -110,6 +113,7 @@ int main(int argc, char *argv[]){
             l++;
         }
     }
+
 
     if (l != NON_ZERO){
         printf("something wrong with making csr");
@@ -216,7 +220,7 @@ int main(int argc, char *argv[]){
         opt_err_sum += (x[i] - ans_x[i]) * (x[i] - ans_x[i]);
 //        printf("x[%d] = %2g\n", i, x[i]);
     }
-    printf("error %2g\n", err_sum);
-    printf("opt_error %2g\n", opt_err_sum);
+    printf("error %2g\n", err_sum/N);
+    printf("opt_error %2g\n", opt_err_sum/N);
     return 0;
 }

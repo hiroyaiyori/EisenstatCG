@@ -252,10 +252,10 @@ void cache_cache(const int maxt, crsdata data, crsrow row, crscol col, const vec
         rxr = dotproduct(r,r);
 
 
-//        printf("LOOP : %d\t Error = %g\n", k, rxr);
 /* if (rt, rt)/(r0, r0) < eps then stop */
         if ((rxr < eps_tilde_rxr0) && (k % m == 0)){
             /* rt = (L^T + D/ω) * r */
+//            printf("LOOP : %d\t Error = %g\n", k, rxr);
             for (i = 0; i < N; i++){
                 rt[i] = 0;
                 for (j = Di[i]; j < row[i+1]; j++){

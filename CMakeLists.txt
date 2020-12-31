@@ -24,5 +24,5 @@ add_executable(PG ${PARSE_GPS_SOURCE})
 set(CACHE_SOURCE cachecache.c cachecache_test.c print_util.c)
 add_executable(cache ${CACHE_SOURCE})
 
-set(GPS_CCE_SOURCE gps_cce.c gps_opt.c mmio.c cachecache.c print_util.c print_util.h)
+set(GPS_CCE_SOURCE gps_cce.c gps_opt.c mmio.c cachecache.c print_util.c)
 add_executable(gps_cce ${GPS_CCE_SOURCE})
