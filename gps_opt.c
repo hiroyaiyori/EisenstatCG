@@ -3,7 +3,7 @@
 #include "gps_opt.h"
 #include "print_util.h"
 
-#define TMAX 100
+#define PDTMAX 10
 
 
 
@@ -56,7 +56,7 @@ int generate_level_structure(ivector level, level_index_structure level_index, i
 	level_index[0] = 0;
 	level_index[1] = 1;
 	leveled_x = 1;
-
+// TODO どこにも隣接していない頂点が存在した場合どうするか
 	while(leveled_x < N){
 		for (i = level_index[current_level - 2]; i < level_index[current_level - 1]; i++){
 			s = level[i];
@@ -104,13 +104,17 @@ void pseudo_diameter(int *level_index_v, int *level_index_u,
 	minimal_digree_all(row, v);
 	new_level_depth = generate_level_structure(level_1, level_index_1, x_level_1, col, row, *v);
 	*level_depth = new_level_depth;
-	for (i = 0; i < TMAX; i++){
+	for (i = 0; i <PDTMAX; i++){
+        printf("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+	    printf("LOOP%d:v = %d, level_depth = %d\n", i, *v, *level_depth);
 		if (i % 2 == 0){
 			degree_increasing_sort(po_1 + level_index_1[new_level_depth - 1], N - level_index_1[new_level_depth - 1], row);
 
 			for (j = level_index_1[new_level_depth - 1]; j < N; j++){
 				new_level_depth = generate_level_structure(level_0, level_index_0, x_level_0, col, row, level_1[j]);
-				if (*level_depth < new_level_depth){
+//                printf("LOOP%d: new_level_depth = %d\n", level_1[j], new_level_depth);
+                if (*level_depth < new_level_depth){
+                    *level_depth = new_level_depth;
 					*v = level_1[j];
 					break;
 				}
@@ -135,7 +139,9 @@ void pseudo_diameter(int *level_index_v, int *level_index_u,
 			degree_increasing_sort(po_0 + level_index_0[new_level_depth - 1], N - level_index_0[new_level_depth - 1], row);
 			for (j = level_index_0[new_level_depth - 1]; j < N; j++){
 				new_level_depth = generate_level_structure(level_1, level_index_1, x_level_1, col, row, level_0[j]);
+//                printf("LOOP%d: new_level_depth = %d\n", level_0[j], new_level_depth);
 				if (*level_depth < new_level_depth){
+				    *level_depth  = new_level_depth;
 					*v = level_0[j];
 					break;
 				}

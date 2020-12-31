@@ -16,6 +16,7 @@ int main(int argc, char *argv[]){
     FILE *f;
     int m, n, nz;
     int i, j, k, l, c;
+    double init_val;
     int coltmp, rowtmp;
     double valtmp;
     crscol col, r_row;
@@ -74,6 +75,9 @@ int main(int argc, char *argv[]){
     for (i=0; i<nz; i++)
     {
         fscanf(f, "%d %d %lg\n", &col[l], &r_row[l], &val[l]);
+        if( i == 0)
+            init_val = val[0];
+        val[l] /= init_val;
         col[l]--;  /* adjust from 1-based to 0-based */
         r_row[l]--;
         if ((l != 0) && (r_row[l] != r_row[l - 1])){
@@ -106,14 +110,15 @@ int main(int argc, char *argv[]){
             l++;
         }
     }
+
     if (l != NON_ZERO){
         printf("something wrong with making csr");
         exit(1);
     }
 
     row[j] = NON_ZERO;
-    if (j != N + 1){
-        printf("the number of row is invalid");
+    if (j != N){
+        printf("the number of row is invalid\n");
     }
 
     if (f !=stdin) fclose(f);
@@ -131,20 +136,27 @@ int main(int argc, char *argv[]){
     /************************/
     /* now write out matrix on original format*/
     /************************/
-    fprintf(stdout, "@@@@@@@@@@@@@@@ original matrix @@@@@@@@@@@@@@@@\n\n\n");
-    print_matrix_image(col, row);
+//    fprintf(stdout, "@@@@@@@@@@@@@@@ original matrix @@@@@@@@@@@@@@@@\n\n\n");
+//    print_matrix_image(col, row);
+    long gps_cpu_0, gps_cpu_1, gps_cpu;
+    gps_cpu_0 = clock();
     ivector numbered;
     gps(row, col, numbered);
     crsdata optdata;
     crscol optcol;
     crsrow optrow;
     opt_mat(numbered, val, optdata, col, optcol, row, optrow);
-    fprintf(stdout, "\n\n\n\n\n---------@@@@@@@@@@@@@@@@@ minimized matrix @@@@@@@@@@@@@@@@@-----------\n\n\n\n\n");
-    print_matrix_image(optcol, optrow);
+    gps_cpu_1 = clock();
+    gps_cpu = gps_cpu_1 - gps_cpu_0;
+//    fprintf(stdout, "\n\n\n\n\n---------@@@@@@@@@@@@@@@@@ minimized matrix @@@@@@@@@@@@@@@@@-----------\n\n\n\n\n");
+//    print_matrix_image(optcol, optrow);
 
     int mb, mbopt;
+    int mbs, mbopts;
     mb = 0;
     mbopt = 0;
+    mbs = 0;
+    mbopts = 0;
     for (i = 0; i < N; i++){
         if (mb < col[row[i + 1] - 1] - i){
             mb = col[row[i + 1] - 1] - i;
@@ -152,40 +164,59 @@ int main(int argc, char *argv[]){
         if (mbopt < optcol[optrow[i + 1] - 1] - i){
             mbopt = optcol[optrow[i + 1] - 1] - i;
         }
+        mbs +=  col[row[i + 1] - 1] - i;
+        mbopts += optcol[optrow[i + 1] - 1] - i;
 
     }
     printf("\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
     printf("\n\tbandwidth decreased %d to %d\n", mb, mbopt);
+    printf("\n\tbandwidth sum decreased %d to %d\n", mbs, mbopts);
     printf("\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
 
+//    print_matrix_image(col, row);
+//    printf("\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+//    print_matrix_image(optcol, optrow);
+//    printf("\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+
     vector x;
+    vector opt_x = {};
     for (i = 0; i < N; i++){
         x[i] = 1.0;
+        opt_x[i] = 1.0;
     }
     vector b = {};
     int itern;
-    long cpu_time_0, cpu_time_1, cg_cpu_time;
+    long cpu_time_0, cpu_time_1, cpu_time_2, cg_cpu_time;
     cpu_time_0 = clock();
 
     // TRI preconditioning CG法でAx=bを解く
+    printf("original cachecache\n");
     cache_cache(TMAX, val, row, col, b, x, EPS, EPS_D, OMEGA, M, &itern);
-
     cpu_time_1 = clock();
-    cg_cpu_time = cpu_time_1 - cpu_time_0;
+    printf("original cachecache LOOP N: %d\n", itern);
+    printf("bm cachecache\n");
+    cache_cache(TMAX, optdata, optrow, optcol, b, opt_x, EPS, EPS_D, OMEGA, M, &itern);
+    printf("GPS cachecache LOOP N: %d\n", itern);
+    cpu_time_2 = clock();
+
 
     printf("--------------- calc done -------------\n");
-    printf("CG Method CPU time： %ld\n", cg_cpu_time);
+    printf("ORIGINAL MATRIX CPU time： %ld\n", cpu_time_1 - cpu_time_0);
+    printf("BW MATRIX CPU time： %ld, GPS CPU time： %ld\n", cpu_time_2 - cpu_time_1, gps_cpu);
     vector ans_x = {};
-    for (i = 0; i < N; i++){
-        printf("%2g, ",x[i]);
-    }
+//    for (i = 0; i < N; i++){
+//        printf("%2g, ",x[i]);
+//    }
     printf("\n");
-    double err_sum;
+    double err_sum, opt_err_sum;
     err_sum = 0;
+    opt_err_sum = 0;
     for(i = 0; i < N; i++){
-        err_sum += (x[i] - ans_x[i]) * (x[i] - ans_x[i]);
-        printf("x[%d] = %2g\n", i, x[i]);
+        err_sum += (opt_x[i] - ans_x[numbered[i]]) * (opt_x[i] - ans_x[numbered[i]]);
+        opt_err_sum += (x[i] - ans_x[i]) * (x[i] - ans_x[i]);
+//        printf("x[%d] = %2g\n", i, x[i]);
     }
     printf("error %2g\n", err_sum);
+    printf("opt_error %2g\n", opt_err_sum);
     return 0;
 }

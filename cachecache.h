@@ -9,11 +9,10 @@
 
 
 #define M    3
-#define TMAX 100
-#define EPS  (1.0e-6)
-#define EPS_D (2.0e-6)
-#define OMEGA  1.5
-
+#define TMAX N * 2
+#define EPS  (1.0e-7)
+#define EPS_D (2.0e-7)
+#define OMEGA  1.0
 
 
 void copy_vector(vector y, const vector x);

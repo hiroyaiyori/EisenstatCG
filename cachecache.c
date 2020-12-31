@@ -96,6 +96,7 @@ void lhat_res_split(crsdata data, crsdata resdata, crscol col, crscol rescol, cr
     resrow[N - 1] = rtmprown;
     row[N] = hn;
     resrow[N] = resn;
+    printf("hn = %d\n", hn);
 
     return;
 }
@@ -251,7 +252,7 @@ void cache_cache(const int maxt, crsdata data, crsrow row, crscol col, const vec
         rxr = dotproduct(r,r);
 
 
-        printf("LOOP : %d\t Error = %g\n", k, rxr);
+//        printf("LOOP : %d\t Error = %g\n", k, rxr);
 /* if (rt, rt)/(r0, r0) < eps then stop */
         if ((rxr < eps_tilde_rxr0) && (k % m == 0)){
             /* rt = (L^T + D/ω) * r */
