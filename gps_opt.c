@@ -103,6 +103,10 @@ void pseudo_diameter(int *level_index_v, int *level_index_u,
 	min_u_width = NON_ZERO;
 	minimal_digree_all(row, v);
 	new_level_depth = generate_level_structure(level_1, level_index_1, x_level_1, col, row, *v);
+//	for (i = 0; i<N; i++){
+//        new_level_depth = generate_level_structure(level_1, level_index_1, x_level_1, col, row, i);
+//        printf("level=%d\n", new_level_depth);
+//	}
 	*level_depth = new_level_depth;
 	for (i = 0; i <PDTMAX; i++){
         printf("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
@@ -241,10 +245,10 @@ void minimizing_level_width(crsrow row, crscol col, ivector x_level, level_index
 		max_u_width = 0;
 		for(j = 0; j < *level_depth; j++){
 			k = level_index_v[j] - level_index[j];	
-			if (k > max_v_width)
-				max_v_width = k;
+			if (k >= 1 && k + level_index[j] > max_v_width)
+				max_v_width = k + level_index[j];
 			k = level_index_u[*level_depth - j - 1] - level_index[j];
-			if (k > max_u_width)
+			if (k >= 1 && k + level_index[j] > max_u_width)
 				max_u_width = k;
 		}
 		if (max_v_width < max_u_width){
@@ -262,32 +266,32 @@ void minimizing_level_width(crsrow row, crscol col, ivector x_level, level_index
 				level_index[x_level[component_elements[j]] - 1]++;
 			}
 		}else{
-			max_v_width = 0;
-			max_u_width = 0;
-			for(j = 0; j < *level_depth; j++){
-				k = level_index_v[j];	
-				if (k > max_v_width)
-					max_v_width = k;
-				k = level_index_u[*level_depth - j - 1];
-				if (k > max_u_width)
-					max_u_width = k;
-			}
-		    if (max_v_width <= max_u_width){
+//			max_v_width = 0;
+//			max_u_width = 0;
+//			for(j = 0; j < *level_depth; j++){
+//				k = level_index_v[j];
+//				if (k > max_v_width)
+//					max_v_width = k;
+//				k = level_index_u[*level_depth - j - 1];
+//				if (k > max_u_width)
+//					max_u_width = k;
+//			}
+//		    if (max_v_width <= max_u_width){
 				if (i == 0)
 					*chosed_element = 0;
 				for(j = component_sep_i[sorted_m[i]]; j < component_sep_i[sorted_m[i] + 1]; j++){
 					x_level[component_elements[j]] = x_level_v[component_elements[j]];
 					level_index[x_level[component_elements[j]] - 1]++;
 				}
-			}else{
-				if (i == 0)
-					*chosed_element = 1;
-				for(j = component_sep_i[sorted_m[i]]; j < component_sep_i[sorted_m[i] + 1]; j++){
-					x_level[component_elements[j]] = x_level_u[component_elements[j]];
-					level_index[x_level[component_elements[j]] - 1]++;
-				}
+//			}else{
+//				if (i == 0)
+//					*chosed_element = 1;
+//				for(j = component_sep_i[sorted_m[i]]; j < component_sep_i[sorted_m[i] + 1]; j++){
+//					x_level[component_elements[j]] = x_level_u[component_elements[j]];
+//					level_index[x_level[component_elements[j]] - 1]++;
+//				}
 
-			}
+//			}
 		}
 	}
 	return;
@@ -306,7 +310,8 @@ void gps(crsrow row, crscol col, ivector numbered){
 	ivector adj0 = {0};
 	ivector adj1 = {0};
 	minimizing_level_width(row, col, x_level, level_width, level_index_v, level_index_u, level_v, level_u, &u, &v, &level_depth, &choosed_element);
-	if (row[u + 1] - row[u] < row[v+1] - row[v]){
+    int debugtmp;
+    if (row[u + 1] - row[u] < row[v+1] - row[v]){
 		tmp = u;
 		u = v;
 		v = tmp;
@@ -394,9 +399,10 @@ void gps(crsrow row, crscol col, ivector numbered){
 			    wcand = level_v[i];
 				if(x_level[wcand] == lvl+1){
 					for (j = l0; j < j0; j++) {
-                        if (numbered[j] == wcand)
+                        if (numbered[j] == wcand){
                             l_first_flg = 1;
-                        break;
+                            break;
+                        }
                     }
 					if (!l_first_flg){
 					    md = row[wcand + 1] - row[wcand];
@@ -413,10 +419,11 @@ void gps(crsrow row, crscol col, ivector numbered){
 			    wcand = level_u[N - 1 - i];
                 if(x_level[wcand] == lvl+1){
 					for (j = l0; j < j0; j++){
-    					if (numbered[j] == wcand)
-						    l_first_flg = 1;
-							break;
-						}
+                        if (numbered[j] == wcand){
+                            l_first_flg = 1;
+                            break;
+                        }
+					}
 					if (!l_first_flg){
     				    md = row[wcand + 1] - row[wcand];
 					    if (min_degree > md){
@@ -429,6 +436,7 @@ void gps(crsrow row, crscol col, ivector numbered){
 				}
 			}
 			numbered[j0] = min_degree_n;
+//			printf("numbered[%d]=%d\n",j0, numbered[j0]);
 			j0_init = j0;
 			j0++;
 			for (k = j0_init; k < j0; k++){
@@ -460,9 +468,12 @@ void gps(crsrow row, crscol col, ivector numbered){
 				}
 				degree_increasing_sort(adj0, n0, row);
 				degree_increasing_sort(adj1, n1, row);
-				for (i = 0; i < n0; i++)
-					numbered[j0 + i] = adj0[i];
-				for (i = 0; i < n1; i++){
+				for (i = 0; i < n0; i++){
+                    numbered[j0 + i] = adj0[i];
+                }
+
+
+                for (i = 0; i < n1; i++){
 					numbered[j1 + i] = adj1[i];
 				}
 				j0 += n0;
