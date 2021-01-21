@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include "mmio.h"
 #include "gps_opt.h"
+#include "print_util.h"
 
 
 int main(int argc, char *argv[])

@@ -34,9 +34,6 @@ void lhat_res_split(crsdata data, crsdata resdata, crscol col, crscol rescol, cr
         else
             spl_p[i + 1] = spl_p[i] + quo;
     }
-    if (spl_p[PARALLEL_N] != N - 1){
-        printf("\n++++++++++++++++++++++++++++++++ERROR!!++++++++++++++++++++++++++%d\n", spl_p[PARALLEL_N]);
-    }
     for (i = 0; i < PARALLEL_N; i++){
         j =  spl_p[i];
         for (k = blcsep; k < row[j + 1]; k++){
@@ -96,7 +93,20 @@ void lhat_res_split(crsdata data, crsdata resdata, crscol col, crscol rescol, cr
     resrow[N - 1] = rtmprown;
     row[N] = hn;
     resrow[N] = resn;
+    printf("rn = %d\n", resn);
     printf("hn = %d\n", hn);
+    double hs=0;
+    double rs=0;
+    for (i=0;i<hn;i++){
+        hs+=fabs(data[i]);
+    }
+    for (i=0;i<resn;i++){
+        rs+=fabs(resdata[i]);
+    }
+    printf("hs= %2g\n", hs);
+    printf("rs= %2g\n", rs);
+
+
 
     return;
 }

@@ -7,9 +7,9 @@
 /*
  * Define here the length and the element number of Non Zeros.
  */
-#define N 4704
-#define NON_ZERO  54730 * 2 - N
-#define PARALLEL_N  4
+#define N 2910
+#define NON_ZERO 88603*2-N
+#define PARALLEL_N  8
 
 
 // CRS方式

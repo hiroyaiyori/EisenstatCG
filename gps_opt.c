@@ -22,7 +22,7 @@ void minimal_digree_all(crsrow row, int *mdi){
 }
 
 int minimal_digree(crsrow row, ivector level, const int si, const int ei){
-	int i, rn;
+	int rn;
 	int md = N; 
 	for (int i=0; i < N; i++){
 		rn = row[i+1] - row[i];
@@ -49,7 +49,7 @@ int generate_level_structure(ivector level, level_index_structure level_index, i
 	// Return: Level Number
 	memset(x_level, 0, N * sizeof(int));
 	int i, j, s, t, current_level, leveled_x;
-	int loop_end_flag;
+//	int pre_leveled_x=0;
 	level[0] = v;
 	x_level[v] = 1;
 	current_level = 2;
@@ -74,8 +74,12 @@ int generate_level_structure(ivector level, level_index_structure level_index, i
 			}
 			level_index[current_level] = leveled_x;
 		}
+//		if (pre_leveled_x==leveled_x)
+//		    break;
+//        pre_leveled_x = leveled_x;
         current_level++;
 	}
+	return -1;
 }
 
 void degree_increasing_sort(ivector i_arr, const int len, crsrow row){
@@ -94,13 +98,12 @@ void degree_increasing_sort(ivector i_arr, const int len, crsrow row){
 
 void pseudo_diameter(int *level_index_v, int *level_index_u,
 		int *x_level_v, int *x_level_u, int *level_v, int *level_u, crsrow row, crscol col, int *u, int *v, int *level_depth){
-	int i, j, k, new_level_depth, u_width, min_u_width, u_index, u_depth;
+	int i, j, k, new_level_depth, u_width, min_u_width, u_index;
 	level_index_structure level_index_0, level_index_1;
 	ivector level_0, level_1, x_level_0, x_level_1;
 	int *po_0, *po_1;
 	po_0 = &level_0[0];
 	po_1 = &level_1[0];
-	min_u_width = NON_ZERO;
 	minimal_digree_all(row, v);
 	new_level_depth = generate_level_structure(level_1, level_index_1, x_level_1, col, row, *v);
 //	for (i = 0; i<N; i++){
@@ -109,8 +112,9 @@ void pseudo_diameter(int *level_index_v, int *level_index_u,
 //	}
 	*level_depth = new_level_depth;
 	for (i = 0; i <PDTMAX; i++){
-        printf("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
-	    printf("LOOP%d:v = %d, level_depth = %d\n", i, *v, *level_depth);
+        min_u_width = NON_ZERO;
+//        printf("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+//	    printf("LOOP%d:v = %d, level_depth = %d\n", i, *v, *level_depth);
 		if (i % 2 == 0){
 			degree_increasing_sort(po_1 + level_index_1[new_level_depth - 1], N - level_index_1[new_level_depth - 1], row);
 
@@ -129,7 +133,7 @@ void pseudo_diameter(int *level_index_v, int *level_index_u,
 				}
 				if (j == N-1){
 					*u = level_1[u_index];
-					u_depth = generate_level_structure(level_u, level_index_u, x_level_u, col, row, *u);
+					generate_level_structure(level_u, level_index_u, x_level_u, col, row, *u);
                     //TODO stop copying like this. use poiter.
 					for (k = 0; k < N; k++){
                         level_index_v[k] = level_index_1[k];
@@ -156,7 +160,7 @@ void pseudo_diameter(int *level_index_v, int *level_index_u,
 				}
 				if (j == N-1){
 					*u = level_0[u_index];
-					u_depth = generate_level_structure(level_u, level_index_u, x_level_u, col, row, *u);
+					generate_level_structure(level_u, level_index_u, x_level_u, col, row, *u);
 					//TODO stop copying like this. use poiter.
                     for (k = 0; k < N; k++){
 					    level_index_v[k] = level_index_0[k];
@@ -310,7 +314,6 @@ void gps(crsrow row, crscol col, ivector numbered){
 	ivector adj0 = {0};
 	ivector adj1 = {0};
 	minimizing_level_width(row, col, x_level, level_width, level_index_v, level_index_u, level_v, level_u, &u, &v, &level_depth, &choosed_element);
-    int debugtmp;
     if (row[u + 1] - row[u] < row[v+1] - row[v]){
 		tmp = u;
 		u = v;
